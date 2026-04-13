@@ -1,0 +1,38 @@
+<template>
+    <lightning-card title="Attendance Tracker">
+
+        <!-- Member Selection -->
+        <lightning-combobox
+            label="Select Member"
+            options={memberOptions}
+            value={memberId}
+            onchange={handleChange}>
+        </lightning-combobox>
+
+        <br/>
+
+        <!-- Buttons -->
+        <lightning-button
+            label="Check In"
+            variant="brand"
+            onclick={handleCheckIn}>
+        </lightning-button>
+
+        <lightning-button
+            label="Check Out"
+            variant="destructive"
+            onclick={handleCheckOut}
+            class="slds-m-left_small">
+        </lightning-button>
+
+        <br/><br/>
+
+        <!-- Today Attendance -->
+        <lightning-datatable
+            key-field="Id"
+            data={attendance}
+            columns={columns}>
+        </lightning-datatable>
+
+    </lightning-card>
+</template>

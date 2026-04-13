@@ -1,0 +1,77 @@
+<template>
+    <lightning-card title="Gym Dashboard">
+
+        <div class="slds-grid slds-wrap">
+
+            <!-- Total -->
+            <div class="slds-col slds-size_1-of-3">
+                <p>Total Members</p>
+                <h1>{totalMembers}</h1>
+            </div>
+
+            <!-- Active Clickable -->
+            <div class="slds-col slds-size_1-of-3">
+                <p>Active Members</p>
+                <h1 class="clickable"
+                    data-type="Active"
+                    onclick={handleClick}>
+                    {activeMembers}
+                </h1>
+            </div>
+
+            <!-- Inactive Clickable -->
+            <div class="slds-col slds-size_1-of-3">
+                <p>Inactive Members</p>
+                <h1 class="clickable"
+                    data-type="Expired"
+                    onclick={handleClick}>
+                    {inactiveMembers}
+                </h1>
+            </div>
+
+            <!-- Revenue -->
+            <div class="slds-col slds-size_1-of-3">
+                <p>Revenue</p>
+                <h1>₹ {revenue}</h1>
+            </div>
+
+        </div>
+    </lightning-card>
+
+    <!-- MODAL -->
+    <template if:true={showModal}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">
+                        {modalTitle}
+                    </h2>
+                </header>
+
+                <!-- Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <lightning-datatable
+                        key-field="Id"
+                        data={members}
+                        columns={columns}>
+                    </lightning-datatable>
+
+                </div>
+
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Close"
+                        onclick={closeModal}>
+                    </lightning-button>
+                </footer>
+
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

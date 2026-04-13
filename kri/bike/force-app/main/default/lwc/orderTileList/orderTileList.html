@@ -1,0 +1,50 @@
+<template>
+    <lightning-card title="My Orders" icon-name="standard:orders">
+        <div class="slds-grid slds-wrap slds-p-around_small">
+            <template if:true={orders}>
+                <template for:each={orders} for:item="ord">
+                    <div key={ord.Id} class="slds-size_1-of-3 slds-p-around_small">
+                        <lightning-card class="slds-p-around_small tile-card" title={ord.Name}>
+                            <p><strong>Product:</strong> {ord.Product__r.Name}</p>
+                            <p><strong>Status:</strong> {ord.Status__c}</p>
+                            <p><strong>Date:</strong> {ord.Effective_Date__c}</p>
+
+                            <div class="slds-m-top_small slds-align_absolute-center">
+                                <lightning-button 
+                                    variant="brand"
+                                    label="Return / Exchange"
+                                    onclick={handleOpenForm}
+                                    data-id={ord.Id}>
+                                </lightning-button>
+                            </div>
+                        </lightning-card>
+                    </div>
+                </template>
+            </template>
+            <template if:false={orders}>
+                <p class="slds-text-align_center slds-text-color_error">No Orders Found.</p>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Modal for Form -->
+    <template if:true={showForm}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Return / Exchange Request</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <c-return-exchange-form 
+                        selected-order-id={selectedOrderId} 
+                        oncloseform={handleCloseForm}>
+                    </c-return-exchange-form>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Close" onclick={handleCloseForm}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

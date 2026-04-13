@@ -1,0 +1,34 @@
+<template>
+    <lightning-card title = "Form">
+
+
+       
+<lightning-radio-group 
+    name ="Checkactivity" 
+    label ="daily/weekly" 
+    options={options} 
+    type ="radio" 
+    value={value} 
+    onchange={handleoptionschange}
+    >
+</lightning-radio-group>
+
+
+
+
+
+<lightning-combobox name = "group" label ="group" options={optionsA} onchange={handleoptionsAchange} value ={groupvalue}></lightning-combobox>
+
+
+<lightning-combobox name = "Source" label ="Source" options={optionsB} onchange={handleoptionsBchange} value ={sourcevalue}></lightning-combobox>
+
+
+<template if:true={value}>
+<c-section-b value={value}   groupvalue={groupvalue} sourcevalue={sourcevalue}></c-section-b>
+</template>
+
+
+
+
+</lightning-card>
+</template>

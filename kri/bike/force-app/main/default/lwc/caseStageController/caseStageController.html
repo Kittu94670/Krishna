@@ -1,0 +1,16 @@
+<template>
+    <lightning-card title="Case Full Path">
+        <div class="slds-p-around_medium slds-grid slds-wrap slds-gutters_small">
+            <template for:each={stageButtons} for:item="btn">
+                <lightning-button 
+                    key={btn.name}
+                    label={btn.name} 
+                    onclick={handleStageClick} 
+                    data-stage={btn.name}
+                    variant="brand"
+                    disabled={btn.disabled}>
+                </lightning-button>
+            </template>
+        </div>
+    </lightning-card>
+</template>

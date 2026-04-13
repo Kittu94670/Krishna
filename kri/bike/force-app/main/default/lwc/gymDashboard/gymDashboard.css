@@ -1,0 +1,9 @@
+.clickable {
+    cursor: pointer;
+    color: #1589ee;
+    font-weight: bold;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+}

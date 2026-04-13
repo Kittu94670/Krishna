@@ -1,0 +1,90 @@
+.tile {
+    background: linear-gradient(145deg, #ffffff, #f5f8ff);
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.25s ease;
+    cursor: pointer;
+    padding: 16px;
+}
+.tile:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    border: 1px solid #1b75bc;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #e8f0fe;
+    color: #1b4f9c;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1b75bc;
+    margin-top: 10px;
+    border-left: 4px solid #1b75bc;
+    padding-left: 6px;
+}
+
+.exchange-box {
+    background: #f0faff;
+    border-left: 4px solid #00bcd4;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 10px 0;
+    color: #0277bd;
+    font-weight: 500;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+.popup {
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    animation: popup 0.3s ease;
+}
+@keyframes popup {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 1024px) {
+    .slds-size_1-of-3 { width: 50% !important; }
+}
+@media (max-width: 600px) {
+    .slds-size_1-of-3 { width: 100% !important; }
+}
+.tile:hover {
+    transform: rotate(-1deg) scale(1.05);
+    box-shadow: 0 10px 25px rgba(27,117,188,0.3);
+    background: linear-gradient(145deg, #e8f3ff, #ffffff);
+}
+
+@keyframes pop {
+  0% { transform: scale(0) rotate(0); opacity: 0; }
+  60% { transform: scale(1.2) rotate(20deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 0; }
+}
+.popup {
+    animation: zoomIn 0.25s ease-out;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+    border-radius: 1rem;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

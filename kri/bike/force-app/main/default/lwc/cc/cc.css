@@ -1,0 +1,16 @@
+p {
+    color: white;
+    background-color: #0070d2;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+p:hover {
+    background-color: #005fb2;
+    transform: scale(1.05);
+}

@@ -1,0 +1,38 @@
+<template>
+    <lightning-card title="Membership Plans">
+
+        <template if:true={plans}>
+
+            <div class="slds-grid slds-wrap">
+
+                <template for:each={plans} for:item="plan">
+                    <div key={plan.Id}
+                         class="slds-col slds-size_1-of-3 slds-p-around_small">
+
+                        <lightning-card title={plan.Name}>
+
+                            <p>Duration: {plan.Duration_Months__c} Months</p>
+                            <p>Fee: ₹ {plan.Fee__c}</p>
+
+                            <lightning-button
+                                label="Select"
+                                variant="brand"
+                                data-id={plan.Id}
+                                onclick={handleSelect}>
+                            </lightning-button>
+
+                        </lightning-card>
+
+                    </div>
+                </template>
+
+            </div>
+
+        </template>
+
+        <template if:false={plans}>
+            <p class="slds-p-around_medium">No Plans Available</p>
+        </template>
+
+    </lightning-card>
+</template>

@@ -1,0 +1,19 @@
+<template>
+    <lightning-card>
+       <lightning-datatable key-field="Id" data = {pageData} columns = {columns}> </lightning-datatable>
+     
+        <div class="pagination">
+
+
+
+        <lightning-button label="Previous" onclick={handlePrev} disabled={isFirstPage}></lightning-button>
+        <template for:each={pageNumbers} for:item="page">
+            <lightning-button  key ={page} label ={page} onclick= {handlePageClick}></lightning-button>
+        </template>
+
+   <lightning-button label ="next"  onclick={handleNext} disabled= {isLastPage} ></lightning-button>
+
+        </div>
+
+    </lightning-card>
+</template>

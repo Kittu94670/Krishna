@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Raise Service Request" icon-name="standard:case">
+        <div class="slds-p-around_medium">
+            
+            <!-- Show button initially -->
+            <template if:false={showForm}>
+                <lightning-button 
+                    label="Return / Exchange Form" 
+                    variant="brand" 
+                    onclick={handleShowForm}>
+                </lightning-button>
+            </template>
+
+            <!-- Show form once button clicked -->
+            <template if:true={showForm}>
+                <lightning-record-edit-form 
+                    object-api-name="Case"
+                    onsubmit={handleSubmit}
+                    onsuccess={handleSuccess}
+                    onerror={handleError}>
+                    
+                    <lightning-input-field field-name="Product__c"></lightning-input-field>
+                    <lightning-input-field field-name="Request_Type__c"></lightning-input-field>
+                    <lightning-input-field field-name="Reason__c"></lightning-input-field>
+                    <lightning-input-field field-name="Quantity__c"></lightning-input-field>
+                    <lightning-input-field field-name="Priority"></lightning-input-field>
+                    <lightning-input-field field-name="Category__c"></lightning-input-field>
+                    <lightning-input-field field-name="Subject"></lightning-input-field>
+                    <lightning-input-field field-name="Refund_Amount__c"></lightning-input-field>
+                    <lightning-input-field field-name="Pay_To__c"></lightning-input-field>
+                    <lightning-input-field field-name="Internal_Comments__c"></lightning-input-field>
+                    <lightning-input-field field-name="Refund_Details__c"></lightning-input-field>
+                    <lightning-input-field field-name="Description"></lightning-input-field>
+
+                    <div class="slds-m-top_medium">
+                        <lightning-button type="submit" label="Save" variant="brand"></lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

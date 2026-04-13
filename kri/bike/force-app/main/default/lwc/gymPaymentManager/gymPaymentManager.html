@@ -1,0 +1,50 @@
+<template>
+    <lightning-card title="Payment Manager">
+
+        
+
+        <lightning-record-edit-form
+            object-api-name="Payment__c"
+            onsubmit={handleSubmit}
+            onsuccess={handleSuccess}>
+
+            <!-- Hidden Member lookup -->
+            <lightning-input-field
+                field-name="Member__c"
+                class="slds-hide">
+            </lightning-input-field>
+
+            <!-- Visible Member Name -->
+            <lightning-input
+                label="Member"
+                value={memberName}
+                disabled>
+            </lightning-input>
+
+            <!-- Visible Amount -->
+            <lightning-input
+                label="Amount"
+                value={amount}
+                disabled>
+            </lightning-input>
+
+            <!-- Hidden real Amount -->
+            <lightning-input-field
+                field-name="Amount__c"
+                class="slds-hide">
+            </lightning-input-field>
+
+            <lightning-input-field field-name="Payment_Date__c"></lightning-input-field>
+            <lightning-input-field field-name="Payment_Mode__c"></lightning-input-field>
+            <lightning-input-field field-name="Status__c"></lightning-input-field>
+
+            <lightning-button
+                type="submit"
+                variant="brand"
+                label="Record Payment">
+            </lightning-button>
+
+        </lightning-record-edit-form>
+
+    </lightning-card>
+</template>

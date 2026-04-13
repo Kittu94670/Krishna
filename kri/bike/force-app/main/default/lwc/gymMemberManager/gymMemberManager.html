@@ -1,0 +1,37 @@
+<template>
+    <lightning-card title="Gym Members">
+
+        <lightning-record-edit-form
+            object-api-name="Member__c"
+            onsubmit={handleSubmit}>
+
+            <lightning-messages></lightning-messages>
+
+            <div class="slds-grid slds-wrap">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input-field field-name="Name"></lightning-input-field>
+                    <lightning-input-field field-name="Phone__c"></lightning-input-field>
+                    <lightning-input-field field-name="Email__c"></lightning-input-field>
+                    <lightning-input-field field-name="Date_of_Joining__c"></lightning-input-field>
+
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input-field field-name="Membership_Plan__c"></lightning-input-field>
+                    <lightning-input-field field-name="Trainer__c"></lightning-input-field>
+                    <lightning-input-field field-name="Status__c"></lightning-input-field>
+                </div>
+
+            </div>
+
+            <lightning-button
+                type="submit"
+                variant="brand"
+                label="Save Member">
+            </lightning-button>
+
+        </lightning-record-edit-form>
+
+    </lightning-card>
+</template>

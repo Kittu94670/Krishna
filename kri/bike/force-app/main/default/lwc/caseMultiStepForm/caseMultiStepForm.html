@@ -1,0 +1,67 @@
+<template>
+    <lightning-card title="Raise Service Request" icon-name="standard:case">
+        <div class="slds-p-around_medium">
+
+            <!-- Step 1: Product Selection -->
+            <template if:true={isStep1}>
+                <lightning-combobox label="Select Product"
+                                    name="Product__c"
+                                    options={products}
+                                    value={caseFields.Product__c}
+                                    onchange={handleFieldChange}>
+                </lightning-combobox>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Next" onclick={handleNextStep} variant="brand"></lightning-button>
+                </div>
+            </template>
+
+            <!-- Step 2: Case Details -->
+            <template if:true={isStep2}>
+                <lightning-combobox label="Request Type"
+                                    name="Request_Type__c"
+                                    options={requestTypeOptions}
+                                    value={caseFields.Request_Type__c}
+                                    onchange={handleFieldChange}>
+                </lightning-combobox>
+
+                <lightning-combobox label="Reason"
+                                    name="Reason__c"
+                                    options={reasonOptions}
+                                    value={caseFields.Reason__c}
+                                    onchange={handleFieldChange}>
+                </lightning-combobox>
+
+                <lightning-textarea label="Comments"
+                                    name="Comments"
+                                    value={caseFields.Comments}
+                                    onchange={handleFieldChange}>
+                </lightning-textarea>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Previous" onclick={handlePreviousStep}></lightning-button>
+                    <lightning-button label="Next" onclick={handleNextStep} variant="brand"></lightning-button>
+                </div>
+            </template>
+
+            <!-- Step 3: Review & Pay To -->
+            <template if:true={isStep3}>
+                <p><strong>Selected Product:</strong> {caseFields.Product__c}</p>
+                <p><strong>Price:</strong> {selectedProductPrice}</p>
+
+                <lightning-combobox label="Pay To"
+                                    name="Pay_To__c"
+                                    options={payToOptions}
+                                    value={caseFields.Pay_To__c}
+                                    onchange={handleFieldChange}>
+                </lightning-combobox>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Previous" onclick={handlePreviousStep}></lightning-button>
+                    <lightning-button label="Submit" onclick={handleSubmit} variant="brand"></lightning-button>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,93 @@
+<template>
+    <lightning-card title="All Orders" icon-name="standard:orders">
+        <!-- Customer Service Request Button -->
+        <div class="slds-p-around_small">
+            <lightning-button 
+                label="Customer Service Request" 
+                variant="brand"
+                onclick={handleLoadOrdersClick}>
+            </lightning-button>
+        </div>
+
+        <!-- Orders Tiles: show ONLY after button click -->
+        <template if:true={ordersLoaded}>
+            <div class="slds-p-around_medium slds-grid slds-wrap">
+                <template for:each={getOrdersForTemplate} for:item="order">
+                    <div key={order.Id} class="slds-size_1-of-3 slds-p-around_small">
+                        <div
+                            class="tile slds-box slds-text-align_center slds-m-around_x-small"
+                            data-id={order.Id}
+                            onclick={handleTileClick}
+                        >
+                            <p><b>Order ID:</b> {order.Name}</p>
+                            <p><b>Product:</b> {order.displayProductName}</p>
+                            <p><b>Order Date:</b> {order.displayOrderDate}</p>
+                            <p><b>Refund Amount:</b> {order.displayRefundAmount}</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </lightning-card>
+
+    <!-- Modal for Case Creation -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">
+                        Create Case for {selectedOrder.Name}
+                    </h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-combobox
+                        label="Request Type"
+                        name="Request_Type__c"
+                        options={requestTypeOptions}
+                        value={caseFields.Request_Type__c}
+                        onchange={handleChange}>
+                    </lightning-combobox>
+
+                    <lightning-combobox
+                        label="Reason"
+                        name="Reason__c"
+                        options={reasonOptions}
+                        value={caseFields.Reason__c}
+                        onchange={handleChange}>
+                    </lightning-combobox>
+
+                    <template if:true={isReturnRequest}>
+                        <lightning-combobox
+                            label="Pay To"
+                            name="Pay_To__c"
+                            options={payToOptions}
+                            value={caseFields.Pay_To__c}
+                            onchange={handleChange}>
+                        </lightning-combobox>
+                    </template>
+
+                    <lightning-textarea
+                        label="Description"
+                        name="Description"
+                        value={caseFields.Description}
+                        onchange={handleChange}>
+                    </lightning-textarea>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Cancel"
+                        onclick={handleCloseModal}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Submit"
+                        onclick={handleSubmit}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

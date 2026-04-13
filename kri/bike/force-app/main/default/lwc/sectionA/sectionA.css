@@ -1,0 +1,19 @@
+.successbox{
+    color: blue;
+    display: flex;
+    text-align: center;
+    block-direction: right;
+    
+    
+}
+
+.failurebox{
+    color: blue;
+    display: flex;
+    text-align: center;
+    block-direction: right;
+}
+.radio-group{
+    display: flex;
+    gap: 15px;
+}

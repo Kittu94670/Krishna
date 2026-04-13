@@ -1,0 +1,62 @@
+<template>
+    <lightning-card title="My Service Requests">
+        <div class="slds-p-around_small">
+            <!-- Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Table & Counts -->
+            <template if:false={isLoading}>
+                <!-- ✅ Counts Section -->
+                <div class="counts slds-m-bottom_medium">
+                    <p><b>Open Cases:</b> {openCount}</p>
+                    <p><b>Closed Cases:</b> {closeCount}</p>
+                    <p><b>Return Closed:</b> {returnClosed}</p>
+                    <p><b>Exchange Closed:</b> {exchangeClosed}</p>
+                    <p><b>Total Cases:</b> {totalCount}</p>
+                </div>
+
+                <!-- ✅ Table -->
+                <template if:true={paginatedData.length}>
+                    <lightning-datatable
+                        key-field="Id"
+                        data={paginatedData}
+                        columns={columns}
+                        hide-checkbox-column="true"
+                        onrowaction={handleRowAction}>
+                    </lightning-datatable>
+
+                    <!-- Pagination Controls -->
+                    <div class="pagination slds-m-top_medium slds-text-align_center">
+                        <lightning-button
+                            variant="neutral"
+                            label="Previous"
+                            onclick={handlePrevious}
+                            disabled={isPrevDisabled}>
+                        </lightning-button>
+
+                        <span class="slds-m-horizontal_medium">
+                            Page {currentPage} of {totalPages}
+                        </span>
+
+                        <lightning-button
+                            variant="neutral"
+                            label="Next"
+                            onclick={handleNext}
+                            disabled={isNextDisabled}>
+                        </lightning-button>
+                    </div>
+                </template>
+
+                <!-- ✅ Empty State -->
+                <template if:false={paginatedData.length}>
+                    <div class="empty-state slds-text-align_center slds-p-around_medium">
+                        <lightning-icon icon-name="utility:cases" size="large"></lightning-icon>
+                        <p>No Service Requests Found</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
