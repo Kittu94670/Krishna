@@ -1,0 +1,852 @@
+{
+	"name": "salesforcedx-einstein-gpt",
+	"displayName": "Agentforce Vibes",
+	"description": "Extension for developing on the Salesforce Platform with the help of generative AI",
+	"version": "3.28.0",
+	"publisher": "salesforce",
+	"aiKey": "ec3632a4-df47-47a4-98dc-8134cacbaf7e",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mCe4AI",
+	"qna": "https://github.com/forcedotcom/Einstein-GPT-for-Developers/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/Einstein-GPT-for-Developers/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/Einstein-GPT-for-Developers"
+	},
+	"icon": "images/AgentforceVibes.png",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.86.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"scripts": {
+		"vscode:prepublish": "npm run compile && npm run bundle:extension && npm run update-for-packaging",
+		"compile": "tsc --noEmit && node ./esbuild.js && npm run webview:build",
+		"clean": "rimraf dist out .vscode-test test/e2e/results && npm run webview:clean",
+		"watch": "tsc --noEmit --watch",
+		"postinstall": "npm run webview:install && echo 'Dependencies installed'",
+		"prettier": "prettier --write .",
+		"prettier-check": "prettier --check .",
+		"lint": "eslint .",
+		"lint-fix": "eslint --fix . --ignore-pattern \"test/e2e/**/*.ts\"; eslint test/e2e/**/*.ts",
+		"update-snapshots": "jest --updateSnapshot",
+		"test": "jest --coverage",
+		"test:watch": "jest --watch --coverage",
+		"test-vsix": "ts-node scripts/installVSIXFromBranch.ts code",
+		"test-vsix-insiders": "ts-node scripts/installVSIXFromBranch.ts code-insiders",
+		"bundle:extension": "node ./esbuild.js --production",
+		"bundle:extension:analyze": "npm run bundle:extension && esbuild-visualizer --template treemap --metadata out/extension-esbuild-metafile.json --filename out/extension-bundle-stats-treemap.html && open out/extension-bundle-stats-treemap.html && esbuild-visualizer --template sunburst --metadata out/extension-esbuild-metafile.json --filename out/extension-bundle-stats-sunburst.html && open out/extension-bundle-stats-sunburst.html",
+		"bundle:vsix": "npm run webview:install && npm run compile && npm run webview:build && vsce package --follow-symlinks",
+		"update-for-packaging": "ts-node scripts/updatePackageJsonForVSIX.ts",
+		"build": "node scripts/build-cline.js",
+		"build:vsix": "node scripts/build-cline.js --vsix",
+		"check-vsix-size": "ts-node scripts/vsix-size-check/check-vsix-size.ts",
+		"pretest:e2e": "npm run compile && npx playwright install --with-deps chromium",
+		"test:e2e": "npx playwright test",
+		"test:e2e:results": "npx playwright show-report test/e2e/results",
+		"sync": "ts-node scripts/cline-sync/main.ts",
+		"sync:get-next-release": "ts-node scripts/cline-sync/utils/get-next-release.ts",
+		"prepare": "husky || true",
+		"webview:install": "cd webviews/welcome && npm install",
+		"webview:dev": "cd webviews/welcome && npm run dev",
+		"webview:build": "cd webviews/welcome && npm run build",
+		"webview:clean": "cd webviews/welcome && npm run clean",
+		"webview:type-check": "cd webviews/welcome && npm run type-check",
+		"watch:all": "concurrently \"npm run watch\" \"npm run webview:dev\""
+	},
+	"devDependencies": {
+		"@eslint/compat": "^2.0.1",
+		"@eslint/eslintrc": "^3.3.3",
+		"@eslint/js": "^9.39.2",
+		"@estruyf/vscode": "^1.2.0",
+		"@langfuse/client": "^4.5.1",
+		"@langfuse/otel": "^4.5.1",
+		"@langfuse/tracing": "^4.5.1",
+		"@opentelemetry/sdk-node": "^0.206.0",
+		"@playwright/test": "^1.45.3",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.3.0",
+		"@tony.ganchev/eslint-plugin-header": "^3.1.11",
+		"@types/diff": "^5.0.7",
+		"@types/jest": "^29.5.1",
+		"@types/node": "^22",
+		"@types/prompts": "^2.4.9",
+		"@types/semver": "^7.7.0",
+		"@types/shelljs": "^0.8.15",
+		"@types/testing-library__react": "^10.2.0",
+		"@types/vscode": "^1.86.0",
+		"@types/vscode-webview": "^1.57.5",
+		"@typescript-eslint/eslint-plugin": "^8.18.2",
+		"@vscode/test-electron": "^2.5.2",
+		"@vscode/vsce": "^3.7.1",
+		"commander": "^13.0.0",
+		"concurrently": "^8.2.2",
+		"esbuild": "^0.27.2",
+		"esbuild-visualizer": "^0.7.0",
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-jest": "^28.8.3",
+		"eslint-plugin-playwright": "^2.5.0",
+		"eslint-plugin-prettier": "^5.5.5",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"execa": "^9.6.0",
+		"extract-zip": "^2.0.1",
+		"find-process": "^1.4.7",
+		"husky": "^9.1.7",
+		"jest": "^29.5.0",
+		"jest-environment-jsdom": "^29.5.0",
+		"lint-staged": "^16.2.7",
+		"npm-run-all": "^4.1.5",
+		"ovsx": "^0.10.8",
+		"prettier": "^3.8.1",
+		"prompts-ncu": "^3.0.2",
+		"rimraf": "^6.1.2",
+		"shelljs": "^0.8.5",
+		"simple-git": "^3.30.0",
+		"ts-jest": "^29.2.5",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.18.2"
+	},
+	"dependencies": {
+		"@orama/orama": "^2.0.22",
+		"@orama/plugin-data-persistence": "^2.0.22",
+		"@salesforce/salesforcedx-vscode-experiments": "^0.2.2",
+		"@salesforce/vscode-service-provider": "^1.3.0-rc.6.5",
+		"@vscode/codicons": "^0.0.38",
+		"agentic-chat": "file:./lib/agentic-chat-0.0.377.tgz",
+		"axios": "^1.12.2",
+		"diff": "^5.1.0",
+		"einstein-shared": "github:forcedotcom/salesforcedx-vscode-einstein-shared#semver:0.3.12",
+		"himalaya": "^1.1.0",
+		"openai": "^4.46.1",
+		"zod": "^3.25.76",
+		"semver": "^7.7.2",
+		"shiki": "^0.14.4"
+	},
+	"main": "dist/extension.js",
+	"l10n": "./l10n",
+	"activationEvents": [
+		"workspaceContains:sfdx-project.json"
+	],
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-core"
+	],
+	"contributes": {
+		"submenus": [
+			{
+				"id": "agentforce.submenu",
+				"label": "Agentforce"
+			},
+			{
+				"id": "agentforce.previewSubmenu",
+				"label": "%salesforcedx-einstein-gpt.agenticChat.livePreviewDropdown.title%",
+				"icon": "$(play)"
+			}
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "agentforce.plusButtonClicked",
+					"group": "navigation@1",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				},
+				{
+					"command": "agentforce.mcpButtonClicked",
+					"group": "navigation@2",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				},
+				{
+					"command": "agentforce.historyButtonClicked",
+					"group": "navigation@3",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				},
+				{
+					"command": "agentforce.popoutButtonClicked",
+					"group": "navigation@4",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				},
+				{
+					"command": "agentforce.accountButtonClicked",
+					"group": "navigation@5",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				},
+				{
+					"command": "agentforce.settingsButtonClicked",
+					"group": "navigation@6",
+					"when": "activeWebviewPanelId == agentic-chat.TabPanelProvider"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "salesforcedx-einstein-gpt.promptForQuery",
+					"when": "editorLangId == 'apex' && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.displayStatusMenu",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.toggleEinsteinAutoCompletions",
+					"title": "%salesforcedx-einstein-gpt.toggleEinsteinAutoCompletions.title%",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.toggleEinsteinAutoCompletionsForCurrentFileType",
+					"title": "%salesforcedx-einstein-gpt.toggleEinsteinAutoCompletionsForCurrentFileType.title%",
+					"when": "(editorLangId == 'apex'|| editorLangId == 'javascript' || editorLangId == 'css' || editorLangId == 'html') && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.gettingStarted",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.getLLMServiceInstance",
+					"when": "never"
+				},
+				{
+					"command": "agentforce.plusButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.mcpButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.historyButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.popoutButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.accountButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.settingsButtonClicked",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.addToChat",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.addTerminalOutputToChat",
+					"when": "false"
+				},
+				{
+					"command": "agentforce.focusChatInput",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.explainCode",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.improveCode",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.generateGitCommitMessage",
+					"when": "scmProvider == git && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.reviewComment.reply",
+					"when": "false"
+				},
+				{
+					"command": "salesforce.einsteinForDevelopers.showWelcomePage",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "agentforce.refreshAfvSkills",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "agentforce.addToChat",
+					"title": "%salesforcedx-einstein-gpt.agenticChat.addToChat.title%",
+					"when": "salesforcedx-einstein-gpt.isEnabled && editorHasSelection"
+				}
+			],
+			"view/title": [
+				{
+					"submenu": "agentforce.previewSubmenu",
+					"group": "navigation@1",
+					"when": "view == agentic-chat.SidebarProvider && (salesforcedx-einstein-gpt.isLivePreviewAvailable || salesforcedx-einstein-gpt.isDataVisualizationAvailable)"
+				},
+				{
+					"command": "agentforce.plusButtonClicked",
+					"when": "view == agentic-chat.SidebarProvider",
+					"group": "navigation@2"
+				},
+				{
+					"command": "agentforce.mcpButtonClicked",
+					"when": "view == agentic-chat.SidebarProvider",
+					"group": "navigation@3"
+				},
+				{
+					"command": "agentforce.historyButtonClicked",
+					"when": "view == agentic-chat.SidebarProvider",
+					"group": "navigation@4"
+				}
+			],
+			"agentforce.previewSubmenu": [
+				{
+					"command": "agentforce.runLivePreview",
+					"group": "navigation",
+					"title": "%salesforcedx-einstein-gpt.agenticChat.previewButtonClicked.title%",
+					"when": "view == agentic-chat.SidebarProvider",
+					"enablement": "view == agentic-chat.SidebarProvider && salesforcedx-einstein-gpt.isLivePreviewAvailable"
+				},
+				{
+					"command": "salesforcedx-einstein-gpt.openDataVisualization",
+					"group": "navigation",
+					"title": "%salesforcedx-einstein-gpt.agenticChat.dataVisualization.title%",
+					"when": "view == agentic-chat.SidebarProvider",
+					"enablement": "view == agentic-chat.SidebarProvider && salesforcedx-einstein-gpt.isDataVisualizationAvailable"
+				}
+			],
+			"terminal/context": [
+				{
+					"command": "agentforce.addTerminalOutputToChat",
+					"group": "navigation",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				}
+			],
+			"scm/title": [
+				{
+					"command": "agentforce.generateGitCommitMessage",
+					"group": "navigation",
+					"when": "scmProvider == git && salesforcedx-einstein-gpt.isEnabled"
+				}
+			],
+			"comments/commentThread/context": [
+				{
+					"command": "agentforce.reviewComment.reply",
+					"group": "inline",
+					"when": "commentController == agentforce-ai-review"
+				}
+			],
+			"comments/commentThread/title": [
+				{
+					"command": "agentforce.reviewComment.addToChat",
+					"group": "inline",
+					"when": "commentController == agentforce-ai-review"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "agentic-chat",
+					"title": "%salesforcedx-einstein-gpt.activitybar.agentic-chat.title%",
+					"icon": "$(vibe-codey)",
+					"when": "salesforcedx-einstein-gpt.isEnabled"
+				}
+			]
+		},
+		"views": {
+			"agentic-chat": [
+				{
+					"type": "webview",
+					"id": "agentic-chat.SidebarProvider",
+					"name": ""
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "salesforcedx-einstein-gpt.gettingStarted",
+				"title": "%salesforcedx-einstein-gpt.gettingStarted.title%"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.openDataVisualization",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.dataVisualization.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled",
+				"enablement": "salesforcedx-einstein-gpt.isEnabled && salesforcedx-einstein-gpt.isDataVisualizationAvailable"
+			},
+			{
+				"command": "agentforce.runLivePreview",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.previewButtonClicked.title%",
+				"icon": "$(play)",
+				"when": "never",
+				"enablement": "salesforcedx-einstein-gpt.isEnabled && salesforcedx-einstein-gpt.isLivePreviewAvailable"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.promptForQuery",
+				"title": "%salesforcedx-einstein-gpt.promptForQuery.title%"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.acceptSuggestion",
+				"title": "%salesforcedx-einstein-gpt.acceptSuggestion.title%",
+				"when": "never"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.clearSuggestion",
+				"title": "%salesforcedx-einstein-gpt.clearSuggestion.title%",
+				"when": "never"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.displayStatusMenu",
+				"title": "%salesforcedx-einstein-gpt.displayStatusMenu.title%"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.toggleEinsteinAutoCompletions",
+				"title": "%salesforcedx-einstein-gpt.toggleEinsteinAutoCompletions.title%"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.toggleEinsteinAutoCompletionsForCurrentFileType",
+				"title": "%salesforcedx-einstein-gpt.toggleEinsteinAutoCompletionsForCurrentFileType.title%"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.sobjectRefreshNudge",
+				"title": "%salesforcedx-einstein-gpt.sobjectRefreshNudge.title%",
+				"when": "never"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.getLLMServiceInstance",
+				"title": "%salesforcedx-einstein-gpt.getLLMServiceInstance.title%",
+				"when": "never"
+			},
+			{
+				"command": "agentforce.plusButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.plusButtonClicked.title%",
+				"icon": "$(add)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.mcpButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.mcpButtonClicked.title%",
+				"icon": "$(server)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.historyButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.historyButtonClicked.title%",
+				"icon": "$(history)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.popoutButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.popoutButtonClicked.title%",
+				"icon": "$(link-external)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.accountButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.accountButtonClicked.title%",
+				"icon": "$(account)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.settingsButtonClicked",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.settingsButtonClicked.title%",
+				"icon": "$(settings-gear)",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.addToChat",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.addToChat.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.addTerminalOutputToChat",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.addTerminalOutputToChat.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.focusChatInput",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.focusChatInput.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.injectPromptToInput",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.injectPromptToInput.title%",
+				"when": "false"
+			},
+			{
+				"command": "agentforce.explainCode",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.explainCode.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.improveCode",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.improveCode.title%",
+				"when": "salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.generateGitCommitMessage",
+				"title": "%salesforcedx-einstein-gpt.agenticChat.generateGitCommitMessage.title%",
+				"icon": "resources/vibe-cody.svg",
+				"when": "scmProvider == git && salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.reviewComment.reply",
+				"title": "Reply",
+				"category": "Agentic Chat",
+				"enablement": "!commentIsEmpty"
+			},
+			{
+				"command": "agentforce.reviewComment.addToChat",
+				"title": "Add to Agentforce",
+				"category": "Agentic Chat",
+				"icon": "$(link-external)"
+			},
+			{
+				"command": "salesforce.einsteinForDevelopers.showWelcomePage",
+				"title": "%salesforce.einsteinForDevelopers.showWelcomePage.title%"
+			},
+			{
+				"command": "agentforce.refreshAfvSkills",
+				"title": "%agentforce.refreshAfvSkills.title%"
+			}
+		],
+		"icons": {
+			"egpt-einstein-logo": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-einstein-logo.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E909"
+				}
+			},
+			"egpt-einstein-logo-with-slash": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-einstein-logo-with-slash.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E906"
+				}
+			},
+			"egpt-einstein-logo-sleepy-state": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-einstein-logo-sleepy-state.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E908"
+				}
+			},
+			"egpt-generate-test": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-einstein-test.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E911"
+				}
+			},
+			"egpt-optimize": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-egpt-optimize.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E90C"
+				}
+			},
+			"egpt-agents": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-agents.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E904"
+				}
+			},
+			"egpt-dev-assistant-outline": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-dev-assistant-outline.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E907"
+				}
+			},
+			"vibe-codey": {
+				"description": "%salesforcedx-einstein-gpt.icons.vibe-codey.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E913"
+				}
+			},
+			"vibe-codey-slash": {
+				"description": "%salesforcedx-einstein-gpt.icons.egpt-einstein-logo-with-slash.description%",
+				"default": {
+					"fontPath": "resources/sfdx-icons.woff2",
+					"fontCharacter": "\\E914"
+				}
+			}
+		},
+		"keybindings": [
+			{
+				"command": "salesforcedx-einstein-gpt.acceptSuggestion",
+				"key": "ctrl+enter",
+				"mac": "cmd+enter",
+				"when": "(editorLangId == 'apex'|| editorLangId == 'javascript' || editorLangId == 'css'|| editorLangId == 'html') && editorTextFocus && !editorReadonly && salesforcedx-einstein-gpt.isEnabled && salesforcedx-einstein-gpt.isBcgSuggestionVisible"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.promptForQuery",
+				"key": "ctrl+shift+r",
+				"mac": "cmd+shift+r",
+				"when": "editorLangId == 'apex' && salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.clearSuggestion",
+				"key": "escape",
+				"mac": "escape",
+				"when": "(editorLangId == 'apex'|| editorLangId == 'javascript' || editorLangId == 'css'|| editorLangId == 'html') && editorTextFocus && !editorReadonly && salesforcedx-einstein-gpt.isEnabled && (salesforcedx-einstein-gpt.isBcgSuggestionVisible || inlineSuggestionVisible)"
+			},
+			{
+				"command": "editor.action.inlineSuggest.trigger",
+				"key": "alt+\\",
+				"mac": "alt+\\",
+				"when": "(editorLangId == 'apex'|| editorLangId == 'javascript' || editorLangId == 'css'|| editorLangId == 'html') && editorTextFocus && !editorReadonly && salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "salesforcedx-einstein-gpt.toggleEinsteinAutoCompletions",
+				"key": "alt+a",
+				"mac": "alt+a",
+				"when": "(editorLangId == 'apex'|| editorLangId == 'javascript' || editorLangId == 'css'|| editorLangId == 'html') && editorTextFocus && !editorReadonly && salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "agentforce.addToChat",
+				"key": "cmd+'",
+				"mac": "cmd+'",
+				"win": "ctrl+'",
+				"linux": "ctrl+'",
+				"when": "salesforcedx-einstein-gpt.isEnabled && editorHasSelection"
+			},
+			{
+				"command": "agentforce.focusChatInput",
+				"key": "cmd+'",
+				"mac": "cmd+'",
+				"win": "ctrl+'",
+				"linux": "ctrl+'",
+				"when": "salesforcedx-einstein-gpt.isEnabled && !editorHasSelection"
+			},
+			{
+				"command": "agentforce.generateGitCommitMessage",
+				"when": "scmProvider == git && salesforcedx-einstein-gpt.isEnabled"
+			},
+			{
+				"command": "editor.action.submitComment",
+				"key": "enter",
+				"when": "commentEditorFocused && commentController == agentforce-ai-review && !commentIsEmpty"
+			}
+		],
+		"languages": [
+			{
+				"id": "apex",
+				"aliases": [
+					"Apex",
+					"apex"
+				],
+				"extensions": [
+					".cls",
+					".trigger",
+					".soql",
+					".apex"
+				]
+			}
+		],
+		"configuration": {
+			"title": "%salesforcedx-einstein-gpt.settings.title%",
+			"order": 0,
+			"properties": {
+				"salesforce.einsteinForDevelopers.enable": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enable.description%",
+					"order": 1
+				},
+				"salesforce.einsteinForDevelopers.enableAutocompletions": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableAutocompletions.description%",
+					"order": 2
+				},
+				"salesforce.einsteinForDevelopers.enableAutocompletionsByFileType": {
+					"type": "object",
+					"additionalProperties": {
+						"type": "boolean"
+					},
+					"default": {
+						"apex": true,
+						"javascript": true,
+						"css": true,
+						"html": true
+					},
+					"description": "%salesforcedx-einstein-gpt.configuration.enableAutocompletionsByFileType.description%",
+					"order": 3
+				},
+				"salesforce.einsteinForDevelopers.enableInlineIndicatorForAutocomplete": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableInlineIndicatorForAutocomplete.description%",
+					"order": 4
+				},
+				"salesforce.einsteinForDevelopers.enableAutocompletionsSleepModeMonitoring": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableAutocompletionsSleepModeMonitoring.description%",
+					"order": 5
+				},
+				"salesforce.einsteinForDevelopers.enableDebugLogging": {
+					"type": "boolean",
+					"default": false,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableDebugLogging.description%",
+					"order": 6
+				},
+				"salesforce.einsteinForDevelopers.optimizeContextWindowForDataMasking": {
+					"type": "boolean",
+					"default": false,
+					"description": "%salesforcedx-einstein-gpt.configuration.optimizeContextWindowForDataMasking.description%",
+					"order": 7
+				},
+				"salesforce.einsteinForDevelopers.enableOnDemandDiff": {
+					"type": "boolean",
+					"default": false,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableOnDemandDiff.description%",
+					"order": 8
+				},
+				"salesforce.einsteinForDevelopers.enableSkills": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableSkills.description%",
+					"order": 9
+				},
+				"salesforce.einsteinForDevelopers.enableAbilities": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableAbilities.description%",
+					"order": 10
+				},
+				"salesforce.einsteinForDevelopers.enableBackgroundTerminal": {
+					"type": "boolean",
+					"default": true,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableBackgroundTerminal.description%",
+					"order": 11
+				},
+				"salesforce.einsteinForDevelopers.enableAutoUpdateSkills": {
+					"type": "boolean",
+					"default": false,
+					"description": "%salesforcedx-einstein-gpt.configuration.enableAutoUpdateSkills.description%",
+					"order": 12
+				},
+				"salesforce.einsteinForDevelopers.advanced": {
+					"type": "object",
+					"title": "Advanced Settings",
+					"properties": {
+						"inlineSuggestDelay": {
+							"type": "integer",
+							"default": 250,
+							"description": "Number of milliseconds to use for delay"
+						},
+						"customAgenticMobileApps": {
+							"type": "boolean",
+							"default": false,
+							"description": "Enable access to custom agentic mobile app development features (Pilot)"
+						}
+					},
+					"order": 13
+				}
+			}
+		},
+		"walkthroughs": [
+			{
+				"id": "einsteinGPT",
+				"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPT.title%",
+				"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPT.description%",
+				"steps": [
+					{
+						"id": "einsteinGPTStep1",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep1.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep1.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-welcome-dark.svg",
+								"hc": "resources/walkthrough-welcome-dark.svg",
+								"light": "resources/walkthrough-welcome-light.svg",
+								"hcLight": "resources/walkthrough-welcome-light.svg"
+							},
+							"altText": "Set up Agentforce Vibes"
+						}
+					},
+					{
+						"id": "einsteinGPTStep2",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep2.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep2.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-vibe-dark.svg",
+								"hc": "resources/walkthrough-vibe-dark.svg",
+								"light": "resources/walkthrough-vibe-light.svg",
+								"hcLight": "resources/walkthrough-vibe-light.svg"
+							},
+							"altText": "Dev Assistant chat interface"
+						}
+					},
+					{
+						"id": "einsteinGPTStep3",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep3.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep3.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-mcp-dark.svg",
+								"hc": "resources/walkthrough-mcp-dark.svg",
+								"light": "resources/walkthrough-mcp-light.svg",
+								"hcLight": "resources/walkthrough-mcp-light.svg"
+							},
+							"altText": "AI Tools panel"
+						}
+					},
+					{
+						"id": "einsteinGPTStep4",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep4.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep4.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-context-dark.svg",
+								"hc": "resources/walkthrough-context-dark.svg",
+								"light": "resources/walkthrough-context-light.svg",
+								"hcLight": "resources/walkthrough-context-light.svg"
+							},
+							"altText": "Context management"
+						}
+					},
+					{
+						"id": "einsteinGPTStep5",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep5.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep5.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-rules-dark.svg",
+								"hc": "resources/walkthrough-rules-dark.svg",
+								"light": "resources/walkthrough-rules-light.svg",
+								"hcLight": "resources/walkthrough-rules-light.svg"
+							},
+							"altText": "Custom rules configuration"
+						}
+					},
+					{
+						"id": "einsteinGPTStep6",
+						"title": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep6.title%",
+						"description": "%salesforcedx-einstein-gpt.walkthroughs.einsteinGPTStep6.description%",
+						"media": {
+							"image": {
+								"dark": "resources/walkthrough-autocomplete-dark.svg",
+								"hc": "resources/walkthrough-autocomplete-dark.svg",
+								"light": "resources/walkthrough-autocomplete-light.svg",
+								"hcLight": "resources/walkthrough-autocomplete-light.svg"
+							},
+							"altText": "Inline code completions"
+						}
+					}
+				]
+			}
+		]
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079490620,
+		"targetPlatform": "undefined",
+		"size": 58663580
+	}
+}

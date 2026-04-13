@@ -1,0 +1,383 @@
+{
+	"name": "salesforcedx-vscode-apex-replay-debugger",
+	"displayName": "Apex Replay Debugger",
+	"description": "Replay Apex execution from Apex Debug Log",
+	"qna": "https://github.com/forcedotcom/salesforcedx-vscode/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode"
+	},
+	"icon": "images/VSCodeApexReplayDebugger.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "66.5.4",
+	"publisher": "salesforce",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mLm4AI",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Debuggers"
+	],
+	"dependencies": {
+		"@salesforce/apex-node": "^8.4.21",
+		"@salesforce/effect-ext-utils": "*",
+		"@salesforce/salesforcedx-apex-replay-debugger": "*",
+		"@salesforce/salesforcedx-utils": "*",
+		"@salesforce/salesforcedx-utils-vscode": "*",
+		"@salesforce/vscode-i18n": "*",
+		"effect": "^3.20.0",
+		"salesforcedx-vscode-apex-log": "*",
+		"vscode-uri": "^3.1.0"
+	},
+	"devDependencies": {
+		"@playwright/test": "*",
+		"@salesforce/core": "^8.28.0",
+		"@salesforce/playwright-vscode-ext": "*",
+		"salesforcedx-vscode-apex": "*",
+		"salesforcedx-vscode-core": "*",
+		"salesforcedx-vscode-metadata": "*",
+		"salesforcedx-vscode-services": "*"
+	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-apex",
+		"salesforce.salesforcedx-vscode-apex-log",
+		"salesforce.salesforcedx-vscode-core",
+		"salesforce.salesforcedx-vscode-services"
+	],
+	"scripts": {
+		"vscode:bundle": "wireit",
+		"test:desktop": "wireit",
+		"vscode:package": "wireit",
+		"vscode:sha256": "node ../../scripts/generate-sha256.js >> ../../SHA256",
+		"vscode:publish": "node ../../scripts/publish-vsix.js",
+		"compile": "wireit",
+		"lint": "wireit",
+		"clean": "shx rm -rf node_modules out dist coverage .nyc_output .wireit .eslintcache *.vsix",
+		"test": "wireit"
+	},
+	"wireit": {
+		"compile": {
+			"command": "tsc --build --pretty",
+			"clean": "if-file-deleted",
+			"dependencies": [
+				"../salesforcedx-apex-replay-debugger:compile",
+				"../salesforcedx-utils:compile",
+				"../salesforcedx-utils-vscode:compile",
+				"../salesforcedx-vscode-apex-log:compile",
+				"../salesforcedx-vscode-i18n:compile",
+				"../salesforcedx-vscode-apex:compile",
+				"../salesforcedx-vscode-core:compile",
+				"../salesforcedx-vscode-services:compile",
+				"../effect-ext-utils:compile",
+				"../salesforcedx-vscode-metadata:compile",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json",
+				"package.json",
+				"package.nls*.json"
+			],
+			"output": [
+				"out/**",
+				"tsconfig.tsbuildinfo"
+			]
+		},
+		"vscode:bundle": {
+			"command": "node ./esbuild.config.mjs",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"test": {
+			"command": "jest --coverage",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"jest.config.js",
+				"../../config/jest.base.config.js"
+			],
+			"output": [
+				"coverage"
+			]
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location .eslintcache .",
+			"dependencies": [
+				"../eslint-local-rules:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"../../eslint.config.mjs",
+				"package.json",
+				"package.nls.json"
+			],
+			"output": []
+		},
+		"vscode:package": {
+			"command": "vsce package --allow-package-all-secrets",
+			"dependencies": [
+				"vscode:bundle"
+			],
+			"files": [
+				"package.json",
+				"package.nls*.json",
+				"README.md",
+				"CHANGELOG.md",
+				"LICENSE.txt",
+				"images/**",
+				"resources/**"
+			],
+			"output": [
+				"*.vsix"
+			]
+		},
+		"test:desktop": {
+			"command": "playwright test --config=playwright.config.desktop.ts",
+			"env": {
+				"VSCODE_DESKTOP": "1",
+				"PLAYWRIGHT_WORKERS": {
+					"external": true
+				}
+			},
+			"dependencies": [
+				"vscode:bundle",
+				"../salesforcedx-vscode-services:vscode:bundle",
+				"../salesforcedx-vscode-core:vscode:bundle",
+				"../salesforcedx-vscode-apex:vscode:bundle",
+				"../salesforcedx-vscode-apex-log:vscode:bundle",
+				"../salesforcedx-vscode-apex-testing:vscode:bundle",
+				"../salesforcedx-vscode-metadata:vscode:bundle",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"playwright.config.desktop.ts",
+				"test/playwright/**/*.ts",
+				"package*.json"
+			],
+			"output": []
+		}
+	},
+	"activationEvents": [
+		"onDebugResolve:apex",
+		"onCommand:extension.replay-debugger.getLogFileName",
+		"onCommand:sf.launch.replay.debugger.logfile",
+		"onCommand:sf.launch.replay.debugger.logfile.path",
+		"onCommand:sf.anon.apex.debug.delegate",
+		"onCommand:sf.apex.debug.document",
+		"onCommand:sf.launch.apex.replay.debugger.with.current.file"
+	],
+	"main": "./dist/index.js",
+	"contributes": {
+		"breakpoints": [
+			{
+				"language": "apex"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "sf.create.checkpoints",
+					"when": "sf:project_opened && sf:has_target_org"
+				},
+				{
+					"command": "sf.toggle.checkpoint",
+					"when": "sf:project_opened && editorLangId == 'apex'"
+				},
+				{
+					"command": "sf.launch.replay.debugger.last.logfile",
+					"when": "sf:project_opened && !inDebugMode"
+				},
+				{
+					"command": "sf.test.view.debugTests",
+					"when": "false"
+				},
+				{
+					"command": "sf.test.view.debugSingleTest",
+					"when": "false"
+				},
+				{
+					"command": "sf.anon.apex.debug.delegate",
+					"when": "sf:project_opened && editorLangId == 'apex'"
+				},
+				{
+					"command": "sf.apex.debug.document",
+					"when": "sf:project_opened && editorLangId == 'apex'"
+				},
+				{
+					"command": "sf.launch.apex.replay.debugger.with.current.file",
+					"when": "sf:project_opened && !inDebugMode"
+				}
+			],
+			"view/title": [
+				{
+					"command": "sf.create.checkpoints",
+					"when": "view == sf.view.checkpoint && sf:project_opened",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "sf.test.view.debugTests",
+					"when": "view == sf.test.view && viewItem =~ /apexTestGroup/",
+					"group": "inline"
+				},
+				{
+					"command": "sf.test.view.debugSingleTest",
+					"when": "view == sf.test.view && viewItem =~ /(apexTest)(_.*|\\b)/",
+					"group": "inline"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "sf.launch.apex.replay.debugger.with.current.file",
+					"when": "sf:project_opened && (resource =~ /\\.(log|apex)$/ || (resource =~ /\\.cls$/ && sf:current_file_is_apex_test))"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "sf.launch.apex.replay.debugger.with.current.file",
+					"when": "sf:project_opened && (resource =~ /\\.(log|apex)$/ || (resource =~ /\\.cls$/ && sf:current_file_is_apex_test))"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "sf.toggle.checkpoint",
+				"title": "%sf_toggle_checkpoint%"
+			},
+			{
+				"command": "sf.create.checkpoints",
+				"title": "%sf_update_checkpoints_in_org%",
+				"icon": {
+					"light": "images/light/cloud-upload.svg",
+					"dark": "images/dark/cloud-upload.svg"
+				},
+				"when": "sf:project_opened"
+			},
+			{
+				"command": "sf.launch.replay.debugger.last.logfile",
+				"title": "%launch_from_last_log_file%"
+			},
+			{
+				"command": "sf.test.view.debugTests",
+				"title": "%run_tests_and_debug%",
+				"icon": {
+					"light": "resources/light/debug.svg",
+					"dark": "resources/dark/debug.svg"
+				}
+			},
+			{
+				"command": "sf.test.view.debugSingleTest",
+				"title": "%run_single_test_and_debug%",
+				"icon": {
+					"light": "resources/light/debug.svg",
+					"dark": "resources/dark/debug.svg"
+				}
+			},
+			{
+				"command": "sf.anon.apex.debug.delegate",
+				"title": "%anon_apex_execute_selection_text%"
+			},
+			{
+				"command": "sf.apex.debug.document",
+				"title": "%apex_debug_document_text%"
+			},
+			{
+				"command": "sf.launch.apex.replay.debugger.with.current.file",
+				"title": "%launch_apex_replay_debugger_with_selected_file%"
+			}
+		],
+		"views": {
+			"debug": [
+				{
+					"id": "sf.view.checkpoint",
+					"name": "%view_checkpoints%",
+					"when": "sf:project_opened"
+				}
+			]
+		},
+		"debuggers": [
+			{
+				"type": "apex-replay",
+				"label": "%debugger_label%",
+				"program": "./dist/apexReplayDebug.js",
+				"runtime": "node",
+				"languages": [
+					"apex"
+				],
+				"variables": {
+					"AskForLogFileName": "extension.replay-debugger.getLogFileName"
+				},
+				"configurationSnippets": [
+					{
+						"label": "%launch_snippet_label_text%",
+						"description": "%launch_snippet_description_text%",
+						"body": {
+							"name": "%launch_snippet_name%",
+							"type": "apex-replay",
+							"request": "launch",
+							"logFile": "^\"\\${command:AskForLogFileName}\"",
+							"stopOnEntry": true,
+							"trace": true
+						}
+					}
+				],
+				"configurationAttributes": {
+					"launch": {
+						"properties": {
+							"required": [
+								"logFile"
+							],
+							"logFile": {
+								"type": "string",
+								"description": "%logfile_text%",
+								"default": "${command:AskForLogFileName}"
+							},
+							"stopOnEntry": {
+								"type": "boolean",
+								"description": "%stop_on_entry_text%",
+								"default": true
+							},
+							"trace": {
+								"type": [
+									"boolean",
+									"string"
+								],
+								"description": "%trace_text%",
+								"default": false
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079480569,
+		"targetPlatform": "undefined",
+		"size": 9650084
+	}
+}

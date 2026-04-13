@@ -1,0 +1,292 @@
+{
+	"name": "sfdx-code-analyzer-vscode",
+	"displayName": "Salesforce Code Analyzer",
+	"description": "Salesforce Code Analyzer is a unified tool for source code analysis. Run Code Analyzer to scan multiple languages in your code and add diagnostic info to your code that describes the violations.",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mDK4AY",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/code-analyzer/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/sfdx-code-analyzer-vscode"
+	},
+	"icon": "images/CodeAnalyzer-small.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "1.17.0",
+	"publisher": "salesforce",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.110.0",
+		"node": ">=20.9.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Linters",
+		"Testing"
+	],
+	"keywords": [
+		"Salesforce Code Analyzer",
+		"Code Analyzer",
+		"SFCA"
+	],
+	"dependencies": {
+		"@salesforce/vscode-service-provider": "^1.5.1",
+		"@types/jest": "^30.0.0",
+		"@types/semver": "^7.7.1",
+		"@types/tmp": "^0.2.6",
+		"diff": "^8.0.3",
+		"glob": "^13.0.6",
+		"semver": "^7.7.4",
+		"tmp": "^0.2.5"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.2",
+		"@types/node": "^20.0.0",
+		"@types/vscode": "^1.110.0",
+		"@vscode/vsce": "^3.7.1",
+		"esbuild": "^0.27.4",
+		"eslint": "^9.39.2",
+		"husky": "^9.1.7",
+		"jest": "^30.3.0",
+		"jest-mock-vscode": "~4.12.0",
+		"ovsx": "^0.10.9",
+		"proxyquire": "^2.1.3",
+		"rimraf": "*",
+		"ts-jest": "^29.4.6",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.57.1"
+	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-core"
+	],
+	"scripts": {
+		"postinstall": "cd end-to-end && npm install && cd ..",
+		"vscode:prepublish": "npm run package",
+		"build": "npm run compile",
+		"package": "npm run compile && npm run lint && node esbuild.js --production",
+		"precompile": "tsc --build --clean && rimraf out",
+		"compile": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"lint": "eslint src",
+		"test": "npm run test:unit && npm run test:e2e",
+		"pretest:unit": "tsc --build ./test/tsconfig.json --noEmit",
+		"test:unit": "jest --coverage",
+		"test:e2e": "cd end-to-end && npm run test && cd ..",
+		"watch": "npm-run-all -p watch:*",
+		"watch:esbuild": "node esbuild.js --watch",
+		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"clean": "npm run precompile && rimraf coverage",
+		"showcoverage": "open ./coverage/unit/lcov-report/index.html",
+		"prepare": "husky"
+	},
+	"activationEvents": [
+		"workspaceContains:sfdx-project.json",
+		"onLanguage:apex",
+		"onLanguage:soql",
+		"onLanguage:visualforce"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "sfca.runOnActiveFile",
+				"title": "SFDX: Scan Current File with Code Analyzer"
+			},
+			{
+				"command": "sfca.runOnSelected",
+				"title": "SFDX: Scan Selected Files or Folders with Code Analyzer"
+			},
+			{
+				"command": "sfca.removeDiagnosticsOnActiveFile",
+				"title": "SFDX: Clear Code Analyzer Violations from Current File"
+			},
+			{
+				"command": "sfca.removeDiagnosticsOnSelectedFile",
+				"title": "SFDX: Clear Code Analyzer Violations from Selected Files or Folders"
+			},
+			{
+				"command": "sfca.runApexGuruAnalysisOnSelectedFile",
+				"title": "SFDX: Scan Selected File for Performance Issues with ApexGuru"
+			},
+			{
+				"command": "sfca.runApexGuruAnalysisOnCurrentFile",
+				"title": "SFDX: Scan Current File for Performance Issues with ApexGuru"
+			}
+		],
+		"configuration": [
+			{
+				"title": "General",
+				"properties": {
+					"codeAnalyzer.analyzeOnSave.enabled": {
+						"type": "boolean",
+						"default": false,
+						"description": "Scan files on save automatically."
+					},
+					"codeAnalyzer.analyzeOnOpen.enabled": {
+						"type": "boolean",
+						"default": false,
+						"description": "Scan files on open automatically."
+					},
+					"codeAnalyzer.analyzeAutomatically.fileTypes": {
+						"type": "string",
+						"default": ".cls,.js,.apex,.trigger,.ts,.xml",
+						"pattern": "^[.][A-Za-z0-9]+(?:,[.][A-Za-z0-9]+)*$",
+						"patternErrorMessage": "Must be a comma-separated list of file extensions (e.g., '.cls,.js,.html'). Each extension must start with a dot and contain only alphanumeric characters, with no spaces.",
+						"markdownDescription": "Comma-separated list of file extensions to analyze automatically when opening or saving files.\n\nSpecify the file types that should be scanned by Code Analyzer when the 'Analyze On Save' or 'Analyze On Open' features are enabled. Include the dot (.) prefix for each extension (e.g., `.cls,.js,.html`).\n\n**Format:** `.ext1,.ext2,.ext3`"
+					}
+				}
+			},
+			{
+				"title": "Configuration",
+				"properties": {
+					"codeAnalyzer.configFile": {
+						"type": "string",
+						"default": "",
+						"markdownDescription": "Path to a [Code Analyzer configuration file](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/config-custom.html) used to customize the engines and rules.\n\nCode Analyzer has an internal default configuration for its rule and engine properties. If you want to override these defaults, you can either add a 'code-analyzer.yml' or 'code-analyzer.yaml' file at the root of your project or explicitly specify your configuration file path with this setting.\n\nThis setting is equivalent to the `--config-file` flag of the CLI commands. See [configuration schema](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/config-toplevel.html)."
+					},
+					"codeAnalyzer.ruleSelectors": {
+						"type": "string",
+						"default": "Recommended",
+						"markdownDescription": "Selection of rules used to scan your code with Code Analyzer.\n\nSelect rules using their name, engine name, severity level, tag, or a combination. Use commas for unions (such as \"Security,Performance\") and colons for intersections (such as \"pmd:Security\" or \"eslint:3\").\n\nThis setting is equivalent to the `--rule-selector` flag of the CLI commands. See [examples](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_code-analyzer_commands_unified.htm#cli_reference_code-analyzer_rules_unified)."
+					}
+				}
+			},
+			{
+				"title": "Diagnostic Levels",
+				"properties": {
+					"codeAnalyzer.severity 1": {
+						"type": "string",
+						"enum": [
+							"Error",
+							"Warning",
+							"Info"
+						],
+						"default": "Warning",
+						"markdownDescription": "Diagnostic level for severity 1 violations (highest severity)."
+					},
+					"codeAnalyzer.severity 2": {
+						"type": "string",
+						"enum": [
+							"Error",
+							"Warning",
+							"Info"
+						],
+						"default": "Warning",
+						"markdownDescription": "Diagnostic level for severity 2 violations."
+					},
+					"codeAnalyzer.severity 3": {
+						"type": "string",
+						"enum": [
+							"Error",
+							"Warning",
+							"Info"
+						],
+						"default": "Warning",
+						"markdownDescription": "Diagnostic level for severity 3 violations."
+					},
+					"codeAnalyzer.severity 4": {
+						"type": "string",
+						"enum": [
+							"Error",
+							"Warning",
+							"Info"
+						],
+						"default": "Warning",
+						"markdownDescription": "Diagnostic level for severity 4 violations."
+					},
+					"codeAnalyzer.severity 5": {
+						"type": "string",
+						"enum": [
+							"Error",
+							"Warning",
+							"Info"
+						],
+						"default": "Warning",
+						"markdownDescription": "Diagnostic level for severity 5 violations (lowest severity)."
+					}
+				}
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "sfca.runOnActiveFile",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.runOnSelected",
+					"when": "false"
+				},
+				{
+					"command": "sfca.removeDiagnosticsOnActiveFile",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.removeDiagnosticsOnSelectedFile",
+					"when": "false"
+				},
+				{
+					"command": "sfca.runApexGuruAnalysisOnSelectedFile",
+					"when": "false"
+				},
+				{
+					"command": "sfca.runApexGuruAnalysisOnCurrentFile",
+					"when": "sfca.extensionActivated && sfca.shouldShowApexGuruButtons && resourceExtname =~ /\\.cls|\\.trigger|\\.apex/"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "sfca.runOnActiveFile",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.removeDiagnosticsOnActiveFile",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.runApexGuruAnalysisOnCurrentFile",
+					"when": "sfca.extensionActivated && sfca.shouldShowApexGuruButtons && resourceExtname =~ /\\.cls|\\.trigger|\\.apex/"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "sfca.runOnSelected",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.removeDiagnosticsOnSelectedFile",
+					"when": "sfca.extensionActivated"
+				},
+				{
+					"command": "sfca.runApexGuruAnalysisOnSelectedFile",
+					"when": "sfca.extensionActivated && sfca.shouldShowApexGuruButtons && explorerResourceIsFolder == false && resourceExtname =~ /\\.cls|\\.trigger|\\.apex/"
+				}
+			]
+		},
+		"languages": [
+			{
+				"id": "apex",
+				"aliases": [
+					"Apex",
+					"apex"
+				],
+				"extensions": [
+					".cls",
+					".trigger",
+					".soql",
+					".apex"
+				]
+			}
+		]
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079477965,
+		"targetPlatform": "undefined",
+		"size": 227487
+	}
+}

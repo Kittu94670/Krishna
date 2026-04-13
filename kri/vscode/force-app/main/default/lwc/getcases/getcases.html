@@ -1,0 +1,24 @@
+<template>
+    <lightning-card title="External Cases">
+<div>
+    <lightning-combobox label = "select Origin"
+    value ={selectedOrigin} 
+    options = {options}
+    onchange ={handleChange}></lightning-combobox>
+</div>
+
+        <!-- Buttons -->
+        <div style="margin-bottom:10px;">
+<lightning-button label="Fetch Cases" onclick={handleGet} class="slds-m-top_small"></lightning-button>
+            <!-- Table -->
+        <lightning-datatable
+            key-field="Id"
+            data={cases}
+            columns={columns}>
+        </lightning-datatable>
+
+        </div>
+
+       
+    </lightning-card>
+</template>

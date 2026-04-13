@@ -1,0 +1,246 @@
+{
+	"name": "salesforcedx-vscode-apex-oas",
+	"displayName": "Apex OpenAPI Specification",
+	"description": "Provides OpenAPI Specification generation for Apex REST and AuraEnabled classes",
+	"qna": "https://github.com/forcedotcom/salesforcedx-vscode/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode"
+	},
+	"icon": "images/VSCodeApexOAS.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "66.5.4",
+	"publisher": "salesforce",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mLm4AI",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"workspaceContains:sfdx-project.json"
+	],
+	"dependencies": {
+		"applicationinsights": "1.0.7",
+		"jsonpath": "1.1.1",
+		"jsonc-parser": "2.2.1"
+	},
+	"devDependencies": {},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-apex",
+		"salesforce.salesforcedx-vscode-core",
+		"salesforce.salesforcedx-einstein-gpt"
+	],
+	"scripts": {
+		"vscode:bundle": "wireit",
+		"vscode:package:legacy": "wireit",
+		"vscode:sha256": "node ../../scripts/generate-sha256.js >> ../../SHA256",
+		"vscode:publish": "node ../../scripts/publish-vsix.js",
+		"compile": "wireit",
+		"lint": "wireit",
+		"clean": "shx rm -rf node_modules out dist coverage .nyc_output .wireit .eslintcache *.vsix",
+		"test": "wireit"
+	},
+	"wireit": {
+		"compile": {
+			"command": "tsc --build --pretty",
+			"clean": "if-file-deleted",
+			"dependencies": [
+				"../salesforcedx-utils-vscode:compile",
+				"../salesforcedx-vscode-i18n:compile",
+				"../salesforcedx-vscode-apex:compile",
+				"../salesforcedx-vscode-core:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json",
+				"package.json",
+				"package.nls*.json"
+			],
+			"output": [
+				"out/**",
+				"tsconfig.tsbuildinfo"
+			]
+		},
+		"vscode:bundle": {
+			"command": "node ./esbuild.config.mjs",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"test": {
+			"command": "jest --coverage",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"jest.config.js",
+				"../../config/jest.base.config.js"
+			],
+			"output": [
+				"coverage"
+			]
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location .eslintcache .",
+			"dependencies": [
+				"../eslint-local-rules:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"../../eslint.config.mjs",
+				"package.json",
+				"package.nls.json"
+			],
+			"output": []
+		},
+		"vscode:package:legacy": {
+			"command": "ts-node ../../scripts/vsce-bundled-extension.ts",
+			"dependencies": [
+				"vscode:bundle"
+			]
+		}
+	},
+	"main": "dist/index.js",
+	"contributes": {
+		"menus": {
+			"editor/context": [
+				{
+					"command": "sf.create.apex.action.class",
+					"when": "sf:project_opened && sf:has_target_org && resource =~ /.\\.(cls)?$/ && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "sf.validate.oas.document",
+					"when": "sf:project_opened && sf:has_target_org && ((resource =~ /.\\.externalServiceRegistration-meta\\.(xml)?$/ && !sf:is_esr_decomposed) || resource =~ /.\\.(yaml)?$/) && salesforcedx-einstein-gpt.isEnabled && sf:muleDxApiInactive"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "sf.create.apex.action.class",
+					"when": "sf:project_opened && sf:has_target_org && resource =~ /.\\.(cls)?$/ && resourcePath =~ /classes/ && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "sf.validate.oas.document",
+					"when": "sf:project_opened && sf:has_target_org && ((resource =~ /.\\.externalServiceRegistration-meta\\.(xml)?$/ && !sf:is_esr_decomposed) || resource =~ /.\\.(yaml)?$/) && salesforcedx-einstein-gpt.isEnabled && sf:muleDxApiInactive"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "sf.create.apex.action.class",
+					"when": "sf:project_opened && sf:has_target_org && salesforcedx-einstein-gpt.isEnabled"
+				},
+				{
+					"command": "sf.validate.oas.document",
+					"when": "sf:project_opened && sf:has_target_org && salesforcedx-einstein-gpt.isEnabled && sf:muleDxApiInactive"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "sf.create.apex.action.class",
+				"title": "%create_openapi_doc_class%"
+			},
+			{
+				"command": "sf.validate.oas.document",
+				"title": "%validate_oas_document%"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "%configuration_title%",
+			"properties": {
+				"salesforcedx-vscode-apex-oas.general.class.access-modifiers": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [
+							"global",
+							"public"
+						]
+					},
+					"default": [
+						"global",
+						"public"
+					],
+					"description": "%apex_oas_general_class_access_modifiers%"
+				},
+				"salesforcedx-vscode-apex-oas.general.method.access-modifiers": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [
+							"global",
+							"public"
+						]
+					},
+					"default": [
+						"global",
+						"public"
+					],
+					"description": "%apex_oas_general_method_access_modifiers%"
+				},
+				"salesforcedx-vscode-apex-oas.general.property.access-modifiers": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [
+							"global",
+							"public"
+						]
+					},
+					"default": [
+						"global",
+						"public"
+					],
+					"description": "%apex_oas_general_property_access_modifiers%"
+				},
+				"salesforcedx-vscode-apex-oas.generation_strategy": {
+					"type": "string",
+					"enum": [
+						"LEAST_CALLS",
+						"MOST_CALLS"
+					],
+					"default": "LEAST_CALLS",
+					"description": "%apex_oas_generation_strategy%"
+				},
+				"salesforcedx-vscode-apex-oas.generation_include_schema": {
+					"type": "boolean",
+					"default": false,
+					"description": "%apex_oas_generation_schema%"
+				},
+				"salesforcedx-vscode-apex-oas.generation_output_token_limit": {
+					"type": "number",
+					"default": 750,
+					"description": "%apex_generation_output_token_limit%"
+				}
+			}
+		}
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079490131,
+		"targetPlatform": "undefined",
+		"size": 12259829
+	}
+}

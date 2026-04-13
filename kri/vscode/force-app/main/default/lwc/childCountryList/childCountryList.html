@@ -1,0 +1,24 @@
+<template>
+    <lightning-card title="Select Visited Countries" icon-name="standard:address">
+        <div class="slds-grid slds-wrap">
+            <template for:each={countries} for:item="country">
+                <div key={country.id} class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <div class="slds-box slds-theme_shade">
+                        <img src={country.image} alt={country.name} style="height:50px; width:80px; margin-bottom:10px;">
+                        <p><strong>{country.name}</strong></p>
+                        <p class="slds-text-body_small">{country.info}</p>
+                        <lightning-input 
+                            type="checkbox" 
+                            label="Visited?" 
+                            value={country.name} 
+                            onchange={handleCheck}>
+                        </lightning-input>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div class="slds-p-around_medium">
+            <lightning-button label="Submit Report" onclick={handleSubmit} variant="brand"></lightning-button>
+        </div>
+    </lightning-card>
+</template>

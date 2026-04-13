@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title = "Parent component">
+    <lightning-radio-group name= "Activities" label ="Activities" options={Activityoptions} values = {values} onchange={handleActivityoptionschange} type = "Radio"></lightning-radio-group>
+    <div style="display: flex; gap: 150px;">
+    <lightning-select name="Groups" label="Group" value={groupValue} options={Groupoption} onchange={handleGroupoptionchange} required></lightning-select>
+    </div>
+    <div style="display: flex; gap: 150px;">
+    <lightning-select name="Source" label="Source" value={sourceValue} options={Sourceoption} onchange={handleSourceoptionchange} required></lightning-select>
+    </div>
+  
+           <c-childcomponent if:true={value} 
+           filtertype={value}
+            group-value={groupValue} 
+            source-value={sourceValue}>
+        </c-childcomponent>
+  
+    </lightning-card>
+
+</template>

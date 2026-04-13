@@ -1,0 +1,68 @@
+{
+  "type": "experience__camaScreen",
+  "title": "Home Screen",
+  "contentBody": {
+    "view": {
+      "definition": "builder/screen",
+      "properties": {},
+      "regions": {
+        "components": {
+          "name": "components",
+          "components": [
+            {
+              "definition": "ui/box",
+              "properties": {
+                "width": "fill",
+                "height": "fill",
+                "alignment": "center",
+                "backgroundColor": "$colors.surface2",
+                "padding": "$spacing.spacing6"
+              },
+              "regions": {
+                "components": {
+                  "name": "components",
+                  "components": [
+                    {
+                      "definition": "ui/column",
+                      "properties": {
+                        "alignment": "middle",
+                        "gap": "$spacing.spacing4"
+                      },
+                      "regions": {
+                        "components": {
+                          "name": "components",
+                          "components": [
+                            {
+                              "definition": "ui/text",
+                              "properties": {
+                                "text": "Your base app is ready",
+                                "style": "titlesFontScale4Semibold",
+                                "color": "$colors.onSurface1"
+                              },
+                              "regions": {}
+                            },
+                            {
+                              "definition": "ui/text",
+                              "properties": {
+                                "text": "Use Vibes to start designing your mobile experience.",
+                                "color": "$colors.onSurface2",
+                                "style": "bodyFontScale2Regular"
+                              },
+                              "regions": {}
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "target": "native__home",
+    "apiName": "homeScreen"
+  }
+}

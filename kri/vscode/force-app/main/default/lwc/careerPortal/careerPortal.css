@@ -1,0 +1,143 @@
+/* ===== Job Tiles ===== */
+/*.job-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+}*/
+.job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .job-grid {
+        grid-template-columns: 1fr 1fr; /* 2 columns on tablet */
+    }
+}
+
+@media (min-width: 1200px) {
+    .job-grid {
+        grid-template-columns: 1fr 1fr 1fr; /* 3 columns on desktop */
+    }
+}
+
+/*.job-card {
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f8f0ff, #ffffff);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    padding: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}*/
+.job-card {
+    background: #fff;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f8f0ff, #ffffff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    border: 1px solid #eee;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* Job title */
+.job-card h3 {
+    font-size: 1.2rem;
+    color: #0b74de;
+    margin: 0.3rem 0;
+}
+
+/* Department and location */
+.job-card p {
+    font-size: 1rem;
+    margin: 0.2rem 0;
+    color: #333333;
+}
+
+/* Button styling inside cards */
+.job-card lightning-button {
+    --lwc-button-text-color: white;
+    --lwc-button-background-color: #1e90ff;
+    --lwc-button-border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Scrollable job list (optional) */
+.job-list-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.job-list-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.job-list-scroll::-webkit-scrollbar-thumb {
+    background: #d8d8d8;
+    border-radius: 4px;
+}
+
+.job-list-scroll::-webkit-scrollbar-thumb:hover {
+    background: #b0b0b0;
+}
+
+/* ===== Modals ===== */
+.slds-modal__container {
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 600px;
+}
+
+.slds-modal__header {
+    background: #4a90e2;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slds-modal__header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.slds-modal__content {
+    padding: 1.5rem;
+    background: #ffffff;
+}
+
+.slds-modal__content form lightning-input {
+    margin-bottom: 0.75rem;
+}
+
+/* Buttons in modals */
+.slds-modal__content lightning-button {
+    margin-top: 0.5rem;
+}
+
+/* Backdrop */
+.slds-backdrop.slds-backdrop_open {
+    background: rgba(0,0,0,0.4);
+}
+
+/* File Upload Labels */
+.slds-modal__content label {
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+/* Submit / Cancel buttons group */
+.slds-m-top_small {
+    display: flex;
+    gap: 0.5rem;
+}

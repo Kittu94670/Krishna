@@ -1,0 +1,15 @@
+<template>
+    <template if:true={countryDetails}>
+        <lightning-card title={countryDetails.name}>
+            <div class="slds-p-around_medium">
+
+<img src={countryDetails.image} width="200"/>
+
+                <p><b>Capital:</b> {countryDetails.capital}</p>
+                <p><b>Population:</b> {countryDetails.population}</p>
+                <p><b>President:</b> {countryDetails.president}</p>
+
+            </div>
+        </lightning-card>
+    </template>
+</template>

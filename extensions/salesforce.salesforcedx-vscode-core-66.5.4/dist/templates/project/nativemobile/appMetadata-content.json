@@ -1,0 +1,49 @@
+{
+  "type": "experience__camaAppMetadata",
+  "title": "App Metadata",
+  "contentBody": {
+    "name": "<%= appLabel %>",
+    "description": "",
+    "version": "1.0.0",
+    "url": "",
+    "templateID": "1",
+    "tabs": [
+      {
+        "id": "home",
+        "label": "Home",
+        "icon": "utility:home",
+        "screenAPIName": "homeScreen"
+      }
+    ],
+    "toolbarActions": {
+      "notifications": false,
+      "search": false
+    },
+    "theme": {
+      "colors": {
+        "accent1": "#7526E3",
+        "accent2": "#7526E3",
+        "accentContainer1": "#7526E3",
+        "accentContainer2": "#342761",
+        "border2": "#7526E3",
+        "onSurface1": "#181818",
+        "onSurface2": "#444444",
+        "onSurface3": "#747474"
+      },
+      "dimensions": {
+        "spacing": {
+          "spacing5": 20
+        },
+        "sizing": {
+          "sizing3": 6
+        }
+      },
+      "typography": {
+        "titlesScale5Regular": {
+          "fontSize": 28,
+          "lineHeight": 36
+        }
+      }
+    }
+  }
+}

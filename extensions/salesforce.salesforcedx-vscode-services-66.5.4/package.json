@@ -1,0 +1,349 @@
+{
+	"name": "salesforcedx-vscode-services",
+	"displayName": "Salesforce Services",
+	"description": "a shared services extension for other extensions to use",
+	"qna": "https://github.com/forcedotcom/salesforcedx-vscode/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode"
+	},
+	"icon": "images/VSCodeBundle.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "66.5.4",
+	"publisher": "salesforce",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mLm4AI",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"dependencies": {
+		"@azure/monitor-opentelemetry-exporter": "^1.0.0-beta.32",
+		"@effect/opentelemetry": "0.61.0",
+		"@effect/platform": "^0.94.5",
+		"@opentelemetry/api": "1.9.0",
+		"@opentelemetry/core": "2.0.1",
+		"@opentelemetry/exporter-trace-otlp-http": "0.213.0",
+		"@opentelemetry/resources": "2.2.0",
+		"@opentelemetry/sdk-logs": "0.203.0",
+		"@opentelemetry/sdk-metrics": "2.5.0",
+		"@opentelemetry/sdk-trace-base": "2.6.1",
+		"@opentelemetry/sdk-trace-node": "2.2.0",
+		"@opentelemetry/sdk-trace-web": "2.2.0",
+		"@salesforce/core": "^8.28.0",
+		"@salesforce/o11y-reporter": "^1.8.1",
+		"@salesforce/source-deploy-retrieve": "^12.32.5",
+		"@salesforce/source-tracking": "^7.8.11",
+		"@salesforce/templates": "^66.7.10",
+		"@salesforce/vscode-i18n": "*",
+		"@vscode/extension-telemetry": "^1.0.0",
+		"effect": "^3.20.0",
+		"jsforce": "^3.10.2",
+		"o11y_schema": "^260.44.0",
+		"vscode-uri": "^3.1.0"
+	},
+	"devDependencies": {
+		"@salesforce/playwright-vscode-ext": "*",
+		"@types/node": "^20.0.0",
+		"jsforce": "^3.9.4",
+		"svgtofont": "^3.5.0"
+	},
+	"scripts": {
+		"build:icons": "wireit",
+		"vscode:bundle": "wireit",
+		"vscode:package": "wireit",
+		"vscode:sha256": "node ../../scripts/generate-sha256.js >> ../../SHA256",
+		"vscode:publish": "node ../../scripts/publish-vsix.js",
+		"compile": "wireit",
+		"generate-types": "wireit",
+		"lint": "wireit",
+		"clean": "shx rm -rf node_modules out dist coverage .nyc_output .wireit .eslintcache *.vsix .circular-deps.json resources",
+		"test": "wireit",
+		"run:web": "wireit",
+		"test:web": "wireit",
+		"test:web:ui": "DEBUG_MODE=1 npm run test:web -- --headed",
+		"test:web:debug": "npm run test:web -- --debug",
+		"test:e2e": "wireit",
+		"o11y:debug": "wireit",
+		"spans:server": "wireit"
+	},
+	"wireit": {
+		"build:icons": {
+			"command": "node scripts/build-icons.mjs",
+			"files": [
+				"scripts/build-icons.mjs",
+				"media/icons-src/*.svg",
+				"media/icons-src/icons.json"
+			],
+			"output": [
+				"resources/icons-font/**"
+			]
+		},
+		"compile": {
+			"command": "tsc --build --pretty",
+			"clean": "if-file-deleted",
+			"dependencies": [
+				"build:icons",
+				"generate-types",
+				"../salesforcedx-vscode-i18n:compile",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json",
+				"package.json",
+				"package.nls*.json"
+			],
+			"output": [
+				"out/**",
+				"tsconfig.tsbuildinfo"
+			]
+		},
+		"generate-types": {
+			"command": "ts-node ../salesforcedx-vscode-services-types/scripts/generateEntry.ts && ts-node ../salesforcedx-vscode-services-types/scripts/syncDeps.ts",
+			"files": [
+				"src/**/*.ts",
+				"../salesforcedx-vscode-services-types/scripts/*.ts"
+			],
+			"output": []
+		},
+		"vscode:bundle": {
+			"command": "node esbuild.config.mjs",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"../../scripts/bundling/web.mjs",
+				"../../scripts/bundling/fs-polyfill.js",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"vscode:bundle:local": {
+			"command": "node esbuild.config.mjs",
+			"dependencies": [
+				"compile"
+			],
+			"env": {
+				"ESBUILD_WEB_LOCAL": "1",
+				"ESBUILD_WEB_ORG_ALIAS": {
+					"external": true
+				}
+			},
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"../../scripts/bundling/web.mjs",
+				"../../scripts/bundling/fs-polyfill.js",
+				"out/**",
+				"../../.esbuild-web-extra-settings.json",
+				"node_modules/@salesforce/templates/lib/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"test": {
+			"command": "jest --coverage",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"jest.config.js",
+				"../../config/jest.base.config.js"
+			],
+			"output": [
+				"coverage"
+			]
+		},
+		"check:circular-deps": {
+			"command": "dpdm --no-warning --no-tree --exit-code circular:1 -o .circular-deps.json src",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json"
+			],
+			"output": [
+				".circular-deps.json"
+			]
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location .eslintcache .",
+			"dependencies": [
+				"../eslint-local-rules:compile",
+				"check:circular-deps"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"../../eslint.config.mjs",
+				".vscodeignore",
+				"package.json",
+				"package.nls.json"
+			],
+			"output": []
+		},
+		"vscode:package": {
+			"command": "vsce package --allow-package-all-secrets",
+			"dependencies": [
+				"vscode:bundle"
+			],
+			"files": [
+				"package.json",
+				"package.nls*.json",
+				"README.md",
+				"CHANGELOG.md",
+				"LICENSE.txt",
+				"images/**",
+				"resources/icons-font/**"
+			],
+			"output": [
+				"*.vsix"
+			]
+		},
+		"test:web": {
+			"command": "playwright test --config=playwright.config.web.ts",
+			"env": {
+				"PLAYWRIGHT_WORKERS": {
+					"external": true
+				}
+			},
+			"dependencies": [
+				"vscode:bundle",
+				"../playwright-vscode-ext:compile",
+				"spans:server"
+			],
+			"files": [
+				"playwright.config.web.ts",
+				"test/playwright/**/*.ts",
+				"package*.json"
+			],
+			"output": []
+		},
+		"test:e2e": {
+			"dependencies": [
+				"test:web"
+			]
+		},
+		"run:web": {
+			"command": "npx vscode-test-web --browserType=chromium --browserOption=--disable-web-security --browserOption=--remote-debugging-port=9222 --extensionDevelopmentPath . --open-devtools --port 3001 --quality stable --verbose --printServerLog",
+			"service": true,
+			"dependencies": [
+				"vscode:bundle:local"
+			],
+			"files": [
+				"test/playwright/**/*.ts"
+			]
+		},
+		"o11y:debug": {
+			"command": "ts-node scripts/o11yDebugServer.ts",
+			"service": true,
+			"files": [
+				"scripts/o11yDebugServer.ts"
+			]
+		},
+		"spans:server": {
+			"command": "ts-node scripts/spanFileServer.ts",
+			"service": true,
+			"files": [
+				"scripts/spanFileServer.ts"
+			]
+		}
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "dist/index.js",
+	"types": "out/src/index.d.ts",
+	"browser": "./dist/web/index.js",
+	"contributes": {
+		"configuration": {
+			"title": "%configuration.title%",
+			"properties": {
+				"salesforce-web-console.protectedOrg": {
+					"type": "boolean",
+					"default": false,
+					"description": "%configuration.protectedOrg.description%"
+				},
+				"salesforce-web-console.instanceUrl": {
+					"type": "string",
+					"default": "",
+					"description": "%configuration.instanceUrl.description%"
+				},
+				"salesforce-web-console.accessToken": {
+					"type": "string",
+					"default": "",
+					"description": "%configuration.accessToken.description%"
+				},
+				"salesforce-web-console.apiVersion": {
+					"type": "string",
+					"default": "64.0",
+					"description": "%configuration.apiVersion.description%"
+				},
+				"salesforce-web-console.retrieveOnLoad": {
+					"type": "string",
+					"default": "",
+					"description": "%configuration.retrieveOnLoad.description%"
+				},
+				"salesforcedx-vscode-salesforcedx.enableLocalTraces": {
+					"type": "boolean",
+					"default": false,
+					"description": "%configuration.otelLocal.description%"
+				},
+				"salesforcedx-vscode-salesforcedx.enableConsoleTraces": {
+					"type": "boolean",
+					"default": false,
+					"description": "%configuration.otelConsole.description%"
+				},
+				"salesforcedx-vscode-salesforcedx.enableFileTraces": {
+					"type": "boolean",
+					"default": false,
+					"description": "%configuration.otelFile.description%"
+				}
+			}
+		},
+		"commands": [],
+		"icons": {
+			"sf-org-leaf": {
+				"description": "Leaf icon for default scratch org",
+				"default": {
+					"fontPath": "resources/icons-font/sf-media-icons.woff",
+					"fontCharacter": "\\E001"
+				}
+			},
+			"sf-org-tree": {
+				"description": "Tree icon for default dev hub",
+				"default": {
+					"fontPath": "resources/icons-font/sf-media-icons.woff",
+					"fontCharacter": "\\E002"
+				}
+			}
+		}
+	},
+	"sideEffects": true,
+	"__metadata": {
+		"installedTimestamp": 1776079408434,
+		"targetPlatform": "undefined",
+		"size": 17958894
+	}
+}

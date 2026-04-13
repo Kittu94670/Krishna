@@ -1,0 +1,203 @@
+"use strict";
+/*
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Test runner for VS Code extension integration tests
+ * This file launches VS Code with the extension loaded for integration testing
+ */
+const path = __importStar(require("path"));
+const cp = __importStar(require("child_process"));
+const test_electron_1 = require("@vscode/test-electron");
+async function main() {
+    try {
+        // The folder containing the Extension Manifest package.json
+        // __dirname is test/integration/out, so we need to go up 3 levels to reach project root
+        const extensionDevelopmentPath = path.resolve(__dirname, '../../../');
+        // Verify the path is correct
+        console.log(`Extension development path: ${extensionDevelopmentPath}`);
+        const fs = require('fs');
+        const packageJsonPath = path.join(extensionDevelopmentPath, 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+            throw new Error(`package.json not found at ${extensionDevelopmentPath}. Check extensionDevelopmentPath.`);
+        }
+        // Temporarily remove extensionDependencies from package.json for integration tests
+        // This works around timing issues where VS Code activates our extension before
+        // dependency extensions are fully ready, causing commands to not register.
+        console.log('[integration] Temporarily removing extensionDependencies from package.json...');
+        const originalPackageJson = fs.readFileSync(packageJsonPath, 'utf8');
+        const packageJson = JSON.parse(originalPackageJson);
+        const originalExtensionDependencies = packageJson.extensionDependencies || [];
+        console.log(`[integration] Original extensionDependencies: ${JSON.stringify(originalExtensionDependencies)}`);
+        packageJson.extensionDependencies = [];
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
+        console.log('[integration] extensionDependencies temporarily set to []');
+        // The path to the test runner script
+        const extensionTestsPath = path.resolve(__dirname, './suite/index');
+        // Extension dependencies that need to be installed
+        const extensionDependencies = [
+            'salesforce.salesforcedx-vscode-core',
+            'salesforce.salesforcedx-vscode-org',
+            'salesforce.salesforcedx-vscode-apex-replay-debugger',
+            'salesforce.agent-script-language-client'
+        ];
+        console.log('Downloading VS Code...');
+        // Download VS Code
+        const vscodeExecutablePath = await (0, test_electron_1.downloadAndUnzipVSCode)('stable');
+        console.log('Installing extension dependencies...');
+        // Resolve CLI arguments for the downloaded VS Code
+        const [cliPath, ...args] = (0, test_electron_1.resolveCliArgsFromVSCodeExecutablePath)(vscodeExecutablePath);
+        // Install required extension dependencies
+        // On Windows, we need to handle the CLI path differently
+        const isWindows = process.platform === 'win32';
+        for (const extensionId of extensionDependencies) {
+            console.log(`Installing ${extensionId}...`);
+            // On Windows, use shell: true and handle paths differently
+            const installArgs = [...args, '--install-extension', extensionId];
+            const spawnOptions = {
+                encoding: 'utf-8',
+                stdio: 'inherit',
+                shell: isWindows // Use shell on Windows to handle .cmd files properly
+            };
+            const result = cp.spawnSync(cliPath, installArgs, spawnOptions);
+            if (result.error) {
+                console.warn(`Warning: Failed to install ${extensionId}:`, result.error.message);
+                // On Windows, try alternative approach if spawnSync fails
+                const errorCode = result.error.code;
+                if (isWindows && (errorCode === 'EINVAL' || errorCode === 'ENOENT')) {
+                    console.log(`Attempting alternative installation method for ${extensionId} on Windows...`);
+                    try {
+                        // On Windows, use execSync with proper quoting
+                        const exec = require('child_process').execSync;
+                        // Properly quote the CLI path and arguments for Windows
+                        const quotedCliPath = `"${cliPath}"`;
+                        const quotedArgs = args.map(arg => `"${arg}"`).join(' ');
+                        const command = `${quotedCliPath} ${quotedArgs} --install-extension ${extensionId}`;
+                        exec(command, { stdio: 'inherit', shell: true, encoding: 'utf-8' });
+                        console.log(`Successfully installed ${extensionId} (using alternative method)`);
+                        continue;
+                    }
+                    catch (altError) {
+                        console.warn(`Alternative installation also failed: ${altError.message}`);
+                        // Don't fail the test - extensions might already be installed or might not be critical
+                    }
+                }
+                // Continue anyway - the extension might already be installed or might not be critical
+            }
+            else if (result.status !== 0) {
+                console.warn(`Warning: Installation of ${extensionId} returned non-zero exit code: ${result.status}`);
+                // Continue anyway - the extension might already be installed
+            }
+            else {
+                console.log(`Successfully installed ${extensionId}`);
+            }
+        }
+        console.log('Running integration tests...');
+        // Run the integration tests with the downloaded VS Code
+        // This will run ALL .nut.js files found in the suite directory
+        try {
+            await (0, test_electron_1.runTests)({
+                vscodeExecutablePath,
+                extensionDevelopmentPath,
+                extensionTestsPath,
+                launchArgs: [
+                    // Open a test workspace (this should trigger activation via workspaceContains:sfdx-project.json)
+                    // Use source fixtures directory (not the compiled out directory)
+                    path.resolve(__dirname, '../fixtures/test-workspace'),
+                    // Disable other extensions that might interfere
+                    '--disable-extension=ms-vscode.vscode-typescript-next',
+                    // Disable VS Code telemetry
+                    '--disable-telemetry',
+                    // Headless/CI flags for running without display
+                    '--no-sandbox',
+                    '--disable-gpu',
+                    '--disable-dev-shm-usage',
+                    // Windows-specific: disable hardware acceleration
+                    ...(isWindows ? ['--disable-software-rasterizer'] : [])
+                ],
+                // Give extension time to activate and disable telemetry
+                extensionTestsEnv: {
+                    // Disable telemetry via environment variables
+                    VSCODE_DISABLE_CRASH_REPORTER: '1',
+                    // Disable Salesforce telemetry
+                    ...process.env
+                }
+            });
+        }
+        finally {
+            // Restore original package.json before cleanup
+            console.log('[integration] Restoring original package.json...');
+            fs.writeFileSync(packageJsonPath, originalPackageJson, 'utf8');
+            console.log('[integration] package.json restored');
+            // Clean up the out directory AFTER all NUT tests have completed
+            // This runs once after the entire test suite finishes, not after individual tests
+            // The out directory will be regenerated by compile:integration on the next test run
+            console.log('All tests completed. Cleaning up test artifacts...');
+            try {
+                const outDir = path.resolve(__dirname);
+                if (fs.existsSync(outDir)) {
+                    // Remove the entire out directory - it's regenerated by compile:integration
+                    fs.rmSync(outDir, { recursive: true, force: true });
+                    console.log('Removed test/integration/out directory');
+                }
+                console.log('Cleanup complete');
+            }
+            catch (cleanupError) {
+                console.warn(`Warning: Failed to clean up test artifacts: ${cleanupError.message}`);
+                // Don't fail the test run if cleanup fails
+            }
+        }
+    }
+    catch (err) {
+        console.error('Failed to run tests:', err);
+        process.exit(1);
+    }
+}
+main();
+//# sourceMappingURL=runTest.js.map

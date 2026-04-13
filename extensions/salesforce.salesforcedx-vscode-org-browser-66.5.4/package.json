@@ -1,0 +1,382 @@
+{
+	"name": "salesforcedx-vscode-org-browser",
+	"displayName": "Salesforce Org Browser",
+	"description": "View and retrieve metadata from your Salesforce org",
+	"qna": "https://github.com/forcedotcom/salesforcedx-vscode/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode"
+	},
+	"icon": "images/VSCodeBundle.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "66.5.4",
+	"publisher": "salesforce",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mLm4AI",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"dependencies": {
+		"@salesforce/effect-ext-utils": "*",
+		"@salesforce/vscode-i18n": "*",
+		"effect": "^3.20.0",
+		"vscode-uri": "^3.1.0"
+	},
+	"devDependencies": {
+		"@salesforce/core": "^8.28.0",
+		"@salesforce/playwright-vscode-ext": "*",
+		"@salesforce/source-deploy-retrieve": "^12.32.5",
+		"salesforcedx-vscode-services": "*"
+	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-services"
+	],
+	"scripts": {
+		"vscode:bundle": "wireit",
+		"run:web": "wireit",
+		"test:web": "wireit",
+		"test:web:ui": "DEBUG_MODE=1 npm run test:web -- --headed",
+		"test:web:debug": "npm run test:web -- --debug",
+		"test:desktop": "wireit",
+		"test:desktop:debug": "npm run test:desktop -- --debug",
+		"test:e2e": "wireit",
+		"prepare:walkthrough-images": "bash scripts/prepare-walkthrough-images.sh",
+		"vscode:package": "wireit",
+		"vscode:sha256": "node ../../scripts/generate-sha256.js >> ../../SHA256",
+		"vscode:publish": "node ../../scripts/publish-vsix.js",
+		"compile": "wireit",
+		"lint": "wireit",
+		"clean": "shx rm -rf node_modules out dist coverage .nyc_output .wireit .eslintcache *.vsix .circular-deps.json",
+		"test": "wireit"
+	},
+	"wireit": {
+		"compile": {
+			"command": "tsc --build --pretty",
+			"clean": "if-file-deleted",
+			"dependencies": [
+				"../effect-ext-utils:compile",
+				"../salesforcedx-vscode-i18n:compile",
+				"../salesforcedx-vscode-services:compile",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json",
+				"package.json",
+				"package.nls*.json"
+			],
+			"output": [
+				"out/**",
+				"tsconfig.tsbuildinfo"
+			]
+		},
+		"vscode:bundle:local": {
+			"command": "node ./esbuild.config.mjs",
+			"dependencies": [
+				"compile",
+				"../salesforcedx-vscode-services:vscode:bundle:local"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"../../scripts/bundling/web.mjs",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"vscode:bundle": {
+			"command": "node ./esbuild.config.mjs",
+			"dependencies": [
+				"compile",
+				"../salesforcedx-vscode-services:vscode:bundle"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"../../scripts/bundling/web.mjs",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"test": {
+			"command": "jest --coverage",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"jest.config.js",
+				"../../config/jest.base.config.js"
+			],
+			"output": [
+				"coverage"
+			]
+		},
+		"check:circular-deps": {
+			"command": "dpdm --no-warning --no-tree --exit-code circular:1 -o .circular-deps.json src",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json"
+			],
+			"output": [
+				".circular-deps.json"
+			]
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location .eslintcache .",
+			"dependencies": [
+				"../eslint-local-rules:compile",
+				"check:circular-deps"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"../../eslint.config.mjs",
+				".vscodeignore",
+				"package.json",
+				"package.nls.json"
+			],
+			"output": []
+		},
+		"vscode:package": {
+			"command": "vsce package",
+			"dependencies": [
+				"vscode:bundle"
+			],
+			"files": [
+				"package.json",
+				"package.nls*.json",
+				"README.md",
+				"CHANGELOG.md",
+				"LICENSE.txt",
+				"images/**",
+				"resources/**"
+			],
+			"output": [
+				"*.vsix"
+			]
+		},
+		"test:web": {
+			"command": "playwright test --config=playwright.config.web.ts",
+			"env": {
+				"PLAYWRIGHT_WORKERS": {
+					"external": true
+				}
+			},
+			"dependencies": [
+				"vscode:bundle",
+				"../salesforcedx-vscode-services:vscode:bundle",
+				"../salesforcedx-vscode-services:spans:server",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"playwright.config.web.ts",
+				"test/playwright/**/*.ts",
+				"package*.json"
+			],
+			"output": []
+		},
+		"test:desktop": {
+			"command": "playwright test --config=playwright.config.desktop.ts",
+			"env": {
+				"VSCODE_DESKTOP": "1",
+				"PLAYWRIGHT_WORKERS": {
+					"external": true
+				}
+			},
+			"dependencies": [
+				"vscode:bundle",
+				"../salesforcedx-vscode-services:vscode:bundle",
+				"../salesforcedx-vscode-services:spans:server",
+				"../playwright-vscode-ext:compile"
+			],
+			"files": [
+				"playwright.config.desktop.ts",
+				"test/playwright/**/*.ts",
+				"package*.json"
+			],
+			"output": []
+		},
+		"test:e2e": {
+			"dependencies": [
+				"test:web",
+				"test:desktop"
+			]
+		},
+		"run:web": {
+			"command": "npx vscode-test-web --browserType=chromium --browserOption=--disable-web-security --browserOption=--remote-debugging-port=9222 --extensionDevelopmentPath . --extensionPath ../salesforcedx-vscode-services --extensionPath ../salesforcedx-vscode-metadata --open-devtools --port 3001 --quality stable --verbose --printServerLog",
+			"service": true,
+			"dependencies": [
+				"vscode:bundle",
+				"../salesforcedx-vscode-services:vscode:bundle"
+			],
+			"files": [
+				"test/playwright/**/*.ts"
+			]
+		}
+	},
+	"main": "./dist/index.js",
+	"browser": "./dist/web/index.js",
+	"contributes": {
+		"walkthroughs": [
+			{
+				"id": "sf.org-browser",
+				"title": "%org_browser_walkthrough_title%",
+				"description": "%org_browser_walkthrough_description%",
+				"steps": [
+					{
+						"id": "open-org-browser",
+						"title": "%org_browser_walkthrough_open_title%",
+						"description": "%org_browser_walkthrough_open_description%",
+						"media": {
+							"image": "images/walkthrough/org-browser-retrieve.png",
+							"altText": "%org_browser_walkthrough_open_alt%"
+						},
+						"completionEvents": [
+							"onCommand:workbench.view.extension.metadata"
+						]
+					},
+					{
+						"id": "custom-object-fields",
+						"title": "%org_browser_walkthrough_custom_object_title%",
+						"description": "%org_browser_walkthrough_custom_object_description%",
+						"media": {
+							"image": "images/walkthrough/org-browser-browse.png",
+							"altText": "%org_browser_walkthrough_custom_object_alt%"
+						}
+					},
+					{
+						"id": "retrieve-type",
+						"title": "%org_browser_walkthrough_retrieve_type_title%",
+						"description": "%org_browser_walkthrough_retrieve_type_description%",
+						"media": {
+							"image": "images/walkthrough/org-browser.png",
+							"altText": "%org_browser_walkthrough_retrieve_type_alt%"
+						}
+					},
+					{
+						"id": "retrieve-single",
+						"title": "%org_browser_walkthrough_retrieve_single_title%",
+						"description": "%org_browser_walkthrough_retrieve_single_description%",
+						"media": {
+							"image": "images/walkthrough/org-browser-file-opened.png",
+							"altText": "%org_browser_walkthrough_retrieve_single_alt%"
+						}
+					}
+				]
+			}
+		],
+		"viewsWelcome": [
+			{
+				"view": "sfdxOrgBrowser",
+				"contents": "Retrieving the metadata types from your org.  This'll take a bit.\n\nThe Org Browser retrieves metadata from your Org and stores it in your project.\nClick any metadata type to see what items are available.\nYou can download individual metadata items or all items of a type."
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "metadata",
+					"title": "%orgBrowser.activitybar.title%",
+					"icon": "resources/orgBrowserIcon.svg"
+				}
+			]
+		},
+		"views": {
+			"metadata": [
+				{
+					"id": "sfdxOrgBrowser",
+					"name": "%orgBrowser.view.name%",
+					"when": "sf:has_target_org"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "sf.org-browser.walkthrough.open",
+				"title": "%org_browser_walkthrough_open_command%",
+				"category": "Org Browser"
+			},
+			{
+				"command": "sfdxOrgBrowser.refreshType",
+				"title": "%orgBrowser.command.refreshType%",
+				"category": "Org Browser",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "sfdxOrgBrowser.retrieveMetadata",
+				"title": "%orgBrowser.command.retrieveMetadata%",
+				"icon": {
+					"dark": "resources/dark/retrieve.svg",
+					"light": "resources/light/retrieve.svg"
+				}
+			},
+			{
+				"command": "sfdxOrgBrowser.collapseAll",
+				"title": "%orgBrowser.command.collapseAll%",
+				"category": "Org Browser",
+				"icon": "$(collapse-all)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "sfdxOrgBrowser.refreshType",
+					"when": "view == sfdxOrgBrowser",
+					"group": "navigation@0"
+				},
+				{
+					"command": "sfdxOrgBrowser.collapseAll",
+					"when": "view == sfdxOrgBrowser",
+					"group": "navigation@1"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "sf.org-browser.walkthrough.open",
+					"when": "sf:has_target_org"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "sfdxOrgBrowser.refreshType",
+					"when": "view == sfdxOrgBrowser && (viewItem == type || viewItem == customObject || viewItem == folderType || viewItem == folder)",
+					"group": "inline"
+				},
+				{
+					"command": "sfdxOrgBrowser.retrieveMetadata",
+					"when": "view == sfdxOrgBrowser && (viewItem == type || viewItem == customObject || viewItem == component)",
+					"group": "inline"
+				}
+			]
+		}
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079478375,
+		"targetPlatform": "undefined",
+		"size": 3070384
+	}
+}

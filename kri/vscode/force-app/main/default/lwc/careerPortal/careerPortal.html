@@ -1,0 +1,170 @@
+<template>
+    <lightning-card title="Job Portal">
+        <div class="slds-grid slds-wrap">
+            <!-- Search Bar and Filters -->
+            <div class="slds-col slds-size_1-of-1 slds-p-around_medium">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_8-of-12">
+                        <lightning-input 
+                            type="search" 
+                            label="Search for jobs" 
+                            value={searchKey} 
+                            onchange={handleSearchKeyChange}
+                            placeholder="Search jobs by keyword">
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12">
+                        <lightning-combobox
+                            label="Location"
+                            value={selectedLocation}
+                            placeholder="Select a location"
+                            options={locations}
+                            onchange={handleLocationChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-12">
+                        <lightning-button label="Search" variant="brand" onclick={handleSearch}></lightning-button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job List -->
+            <div class="slds-col slds-size_1-of-1 slds-p-around_medium">
+                <div class="job-list-scroll">
+                    <template if:true={paginatedJobs.length}>
+                        <div class="job-grid">
+                            <template for:each={paginatedJobs} for:item="job">
+                                <article key={job.Id} class="job-card" data-id={job.Id} onclick={handleJobClick}>
+                                    <div class="slds-card__header">
+                                        <h3>
+                                            <a href="javascript:void(0);" data-id={job.Id}>
+                                                {job.Job_Title__c}
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div class="job-card__meta">
+                                        <p>{job.Location__c}</p>
+                                    </div>
+                                </article>
+                            </template>
+                        </div>
+                    </template>
+                    <template if:true={showNoJobsMessage}>
+                        <p style="text-align:center; margin-top:1rem; color:red;">
+                            No jobs found for your filter/search.
+                        </p>
+                    </template>
+                </div>
+
+                <!-- Pagination -->
+                <div class="slds-m-top_medium slds-align_absolute-center">
+                    <lightning-button label="Previous" onclick={handlePrevious} disabled={isFirstPage}></lightning-button>
+                    <span class="slds-m-horizontal_small">Page {currentPage} of {totalPages}</span>
+                    <lightning-button label="Next" onclick={handleNext} disabled={isLastPage}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+
+    <!-- Job Modal -->
+    <template if:true={isJobModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{selectedJob.Job_Title__c}</h2>
+                    <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeJobModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close"></lightning-icon>
+                    </button>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p><strong>Description:</strong> {selectedJob.Description__c}</p>
+                    <p><strong>Experience:</strong> {selectedJob.Experience__c}</p>
+                    <p><strong>Location:</strong> {selectedJob.Location__c}</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeJobModal}></lightning-button>
+                    <lightning-button label="Apply" variant="brand" onclick={openCandidateForm}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Candidate Form Modal -->
+    <template if:true={isCandidateFormOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Apply for {selectedJob.Job_Title__c}</h2>
+                    <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeCandidateForm}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close"></lightning-icon>
+                    </button>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-messages></lightning-messages>
+
+                    <!-- Candidate Fields -->
+                    <lightning-input label="Name" name="REC_Name__c" value={candidateData.REC_Name__c} onchange={handleInputChange} required></lightning-input>
+                    <lightning-input label="Email" name="REC_Email__c" value={candidateData.REC_Email__c} onchange={handleInputChange} type="email" required></lightning-input>
+                    <lightning-input label="Phone" name="Phone__c" value={candidateData.Phone__c} onchange={handleInputChange} type="tel"></lightning-input>
+                    <lightning-input label="Experience" name="Experience__c" value={candidateData.Experience__c} onchange={handleInputChange} type="number"></lightning-input>
+                    <lightning-input label="Address" name="Address__c" value={candidateData.Address__c} onchange={handleInputChange}></lightning-input>
+                    <lightning-input label="PAN Number" name="PAN_Number__c" value={candidateData.PAN_Number__c} onchange={handleInputChange}></lightning-input>
+                    <lightning-textarea label="Skills" name="Skills__c" value={candidateData.Skills__c} onchange={handleInputChange}></lightning-textarea>
+
+                  <!-- File Uploads -->
+<div class="slds-m-top_medium">
+    <!-- Resume Upload -->
+    <lightning-input 
+        type="file" 
+        label="Upload Resume (pdf/doc)" 
+        name="resumeFile" 
+        onchange={handleFileChange} 
+        accept=".pdf,.doc,.docx">
+    </lightning-input>
+    <template if:true={resumeFileName}>
+<div class="slds-m-top_small slds-grid slds-align_absolute-left">
+            <lightning-icon 
+                icon-name="utility:success" 
+                size="small" 
+                class="slds-m-right_x-small slds-text-color_success"
+                alternative-text="Uploaded">
+            </lightning-icon>
+            <span>Uploaded: {resumeFileName}</span>
+        </div>
+    </template>
+
+    <!-- Identity Proof Upload -->
+    <lightning-input 
+        type="file" 
+        label="Upload Identity Proof" 
+        name="identityFile" 
+        onchange={handleFileChange} 
+        accept=".pdf,.jpg,.png">
+    </lightning-input>
+    <template if:true={identityFileName}>
+   <div class="slds-m-top_small slds-grid slds-align_absolute-left">
+            <lightning-icon 
+                icon-name="utility:success" 
+                size="small" 
+                class="slds-m-right_x-small slds-text-color_success"
+                alternative-text="Uploaded">
+            </lightning-icon>
+            <span>Uploaded: {identityFileName}</span>
+        </div>
+    </template>
+</div>
+
+
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeCandidateForm}></lightning-button>
+                    <lightning-button label="Submit" variant="brand" onclick={handleSubmit}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

@@ -1,0 +1,18 @@
+<template>
+    <lightning-card title="Report Of Visited" icon-name="standard:location">
+        <template if:true={showReport}>
+            <div class="slds-box slds-theme_success slds-m-around_medium">
+                <h2 class="slds-text-heading_small"><b>Trip Summary Report</b></h2>
+                <p>Total Countries Visited: <b>{reportData.count}</b></p>
+                <p>List: {reportData.names}</p>
+            </div>
+        </template>
+
+        <div class="slds-m-top_medium">
+            <c-child-country-list 
+                countries={countryList} 
+                onreportsubmit={handleReportUpdate}>
+            </c-child-country-list>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,294 @@
+{
+	"name": "salesforcedx-vscode-visualforce",
+	"displayName": "Visualforce",
+	"description": "Provides syntax highlighting for the Visualforce framework",
+	"qna": "https://github.com/forcedotcom/salesforcedx-vscode/issues",
+	"bugs": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode/issues"
+	},
+	"repository": {
+		"url": "https://github.com/forcedotcom/salesforcedx-vscode"
+	},
+	"icon": "images/VSCodeVisualforce.png",
+	"galleryBanner": {
+		"color": "#ECECEC",
+		"theme": "light"
+	},
+	"version": "66.5.4",
+	"publisher": "salesforce",
+	"o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
+	"enableO11y": "true",
+	"productFeatureId": "aJCEE0000000mLm4AI",
+	"license": "BSD-3-Clause",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"dependencies": {
+		"vscode-css-languageservice": "^6.3.7",
+		"vscode-languageclient": "^9.0.1",
+		"vscode-languageserver-protocol": "^3.17.5"
+	},
+	"devDependencies": {
+		"@salesforce/salesforcedx-visualforce-language-server": "*",
+		"@salesforce/salesforcedx-visualforce-markup-language-server": "*",
+		"salesforcedx-vscode-core": "*"
+	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-core"
+	],
+	"scripts": {
+		"vscode:bundle": "wireit",
+		"clean": "shx rm -rf node_modules out dist coverage .nyc_output .wireit .eslintcache *.vsix",
+		"compile": "wireit",
+		"lint": "wireit",
+		"test": "wireit",
+		"vscode:package": "wireit",
+		"vscode:publish": "node ../../scripts/publish-vsix.js",
+		"vscode:sha256": "node ../../scripts/generate-sha256.js >> ../../SHA256"
+	},
+	"wireit": {
+		"compile": {
+			"command": "tsc --build --pretty",
+			"clean": "if-file-deleted",
+			"dependencies": [
+				"../salesforcedx-visualforce-language-server:compile",
+				"../salesforcedx-visualforce-markup-language-server:compile",
+				"../salesforcedx-vscode-core:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"tsconfig.json",
+				"../../tsconfig.common.json",
+				"package.json",
+				"package.nls*.json"
+			],
+			"output": [
+				"out/**",
+				"tsconfig.tsbuildinfo"
+			]
+		},
+		"vscode:bundle": {
+			"command": "node ./esbuild.config.mjs",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"esbuild.config.mjs",
+				"../../scripts/bundling/node.mjs",
+				"out/**"
+			],
+			"output": [
+				"dist"
+			]
+		},
+		"test": {
+			"command": "jest --coverage --passWithNoTests",
+			"dependencies": [
+				"compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"jest.config.js",
+				"../../config/jest.base.config.js"
+			],
+			"output": [
+				"coverage"
+			]
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location .eslintcache .",
+			"dependencies": [
+				"../eslint-local-rules:compile"
+			],
+			"files": [
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"../../eslint.config.mjs",
+				"package.json",
+				"package.nls.json"
+			],
+			"output": []
+		},
+		"vscode:package": {
+			"command": "vsce package --allow-package-all-secrets",
+			"dependencies": [
+				"vscode:bundle"
+			],
+			"files": [
+				"package.json",
+				"package.nls*.json",
+				"README.md",
+				"CHANGELOG.md",
+				"LICENSE.txt",
+				"images/**",
+				"syntaxes/**"
+			],
+			"output": [
+				"*.vsix"
+			]
+		}
+	},
+	"main": "./dist/index.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "visualforce",
+				"aliases": [
+					"Visualforce",
+					"visualforce"
+				],
+				"extensions": [
+					".page",
+					".component"
+				],
+				"configuration": "./syntaxes/visualforce.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "visualforce",
+				"scopeName": "text.visualforce.markup",
+				"path": "./syntaxes/visualforce.json",
+				"embeddedLanguages": {
+					"source.css": "css",
+					"source.js": "javascript"
+				}
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "%configuration.title%",
+			"properties": {
+				"visualforce.format.enable": {
+					"type": "boolean",
+					"scope": "window",
+					"default": true,
+					"description": "%visualforce.format.enable.desc%"
+				},
+				"visualforce.format.wrapLineLength": {
+					"type": "integer",
+					"scope": "resource",
+					"default": 120,
+					"description": "%visualforce.format.wrapLineLength.desc%"
+				},
+				"visualforce.format.unformatted": {
+					"type": [
+						"string",
+						"null"
+					],
+					"scope": "resource",
+					"default": "",
+					"description": "%visualforce.format.unformatted.desc%"
+				},
+				"visualforce.format.contentUnformatted": {
+					"type": [
+						"string",
+						"null"
+					],
+					"scope": "resource",
+					"default": "pre,code,textarea",
+					"description": "%visualforce.format.contentUnformatted.desc%"
+				},
+				"visualforce.format.indentInnerHtml": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "%visualforce.format.indentInnervisualforce.desc%"
+				},
+				"visualforce.format.preserveNewLines": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "%visualforce.format.preserveNewLines.desc%"
+				},
+				"visualforce.format.maxPreserveNewLines": {
+					"type": [
+						"number",
+						"null"
+					],
+					"scope": "resource",
+					"default": null,
+					"description": "%visualforce.format.maxPreserveNewLines.desc%"
+				},
+				"visualforce.format.endWithNewline": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "%visualforce.format.endWithNewline.desc%"
+				},
+				"visualforce.format.extraLiners": {
+					"type": [
+						"string",
+						"null"
+					],
+					"scope": "resource",
+					"default": "head, body, /html",
+					"description": "%visualforce.format.extraLiners.desc%"
+				},
+				"visualforce.format.wrapAttributes": {
+					"type": "string",
+					"scope": "resource",
+					"default": "auto",
+					"enum": [
+						"auto",
+						"force",
+						"force-aligned",
+						"force-expand-multiline"
+					],
+					"enumDescriptions": [
+						"%visualforce.format.wrapAttributes.auto%",
+						"%visualforce.format.wrapAttributes.force%",
+						"%visualforce.format.wrapAttributes.forcealign%",
+						"%visualforce.format.wrapAttributes.forcemultiline%"
+					],
+					"description": "%visualforce.format.wrapAttributes.desc%"
+				},
+				"visualforce.suggest.html5": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "%visualforce.suggest.html5.desc%"
+				},
+				"visualforce.validate.scripts": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "%visualforce.validate.scripts%"
+				},
+				"visualforce.validate.styles": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "%visualforce.validate.styles%"
+				},
+				"visualforce.autoClosingTags": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "%visualforce.autoClosingTags%"
+				},
+				"visualforce.trace.server": {
+					"type": "string",
+					"scope": "window",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "%visualforce.trace.server.desc%"
+				}
+			}
+		}
+	},
+	"__metadata": {
+		"installedTimestamp": 1776079479128,
+		"targetPlatform": "undefined",
+		"size": 5899437
+	}
+}

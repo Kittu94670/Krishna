@@ -1,0 +1,14 @@
+{
+  "leaf": {
+    "encodedCode": "\\e001",
+    "prefix": "sf-media-icons",
+    "className": "sf-media-icons-leaf",
+    "unicode": "&#57345;"
+  },
+  "tree": {
+    "encodedCode": "\\e002",
+    "prefix": "sf-media-icons",
+    "className": "sf-media-icons-tree",
+    "unicode": "&#57346;"
+  }
+}
