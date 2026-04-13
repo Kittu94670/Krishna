@@ -22,8 +22,8 @@ public with sharing class AutoConvertLead {
             // Skip already converted leads
             if (ld.IsConverted) {
                 continue;
-            }
-   
+            }// checking
+   //Hii from raj
             Database.LeadConvert lc = new Database.LeadConvert();
             lc.setLeadId(ld.Id);
             lc.setConvertedStatus('Closed - Converted'); // must exist in Lead Status
