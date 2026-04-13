@@ -1,8 +1,8 @@
 public with sharing class GymController {
 
     @AuraEnabled(cacheable=true)
-    public static List<Member__c> getMembers() {
-
+    public static List<Member__c> getMembers() {  
+       //check
         return [
             SELECT Id,
                    Name,
