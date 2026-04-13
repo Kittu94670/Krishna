@@ -5,7 +5,7 @@ public class Notificrecords {
 
       
         
-        String Q = 'SELECT Id, Name, Status__c, Source__c,Group__r.Name FROM Notification_Record__c WHERE Id!= null';
+        String Q = 'SELECT Id, Name, Status__c, Source__c,Group__r.Name,Notification_Date__c FROM Notification_Record__c WHERE Id!= null';
 
        if(String.isNotBlank(sourceval)){
             Q += ' AND Source__c = :sourceval';   
