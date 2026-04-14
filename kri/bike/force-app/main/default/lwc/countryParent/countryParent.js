@@ -17,6 +17,8 @@ export default class CountryParent extends LightningElement {
 
     handleChange(event) {
         this.selectedCountry = event.detail.value;
+
+        
     }
 
     handleShow() {

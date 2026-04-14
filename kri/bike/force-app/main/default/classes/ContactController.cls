@@ -1,67 +1,36 @@
 public with sharing class ContactController {
+    
+    // 1. Fetch DataTable Columns Dynamically
     @AuraEnabled(cacheable=true)
-    public static List<Contact> getContactList() {
-        return [
-            SELECT
-                Id,
-                Name,
-                FirstName,
-                LastName,
-                Title,
-                Phone,
-                Email,
-                Picture__c
-            FROM Contact
-            WHERE Picture__c != NULL
-            WITH USER_MODE
-            LIMIT 10
-        ];
+    public static List<Map<String, String>> getTableColumns() {
+        List<Map<String, String>> columns = new List<Map<String, String>>();
+        columns.add(new Map<String, String>{'label' => 'First Name', 'fieldName' => 'FirstName'});
+        columns.add(new Map<String, String>{'label' => 'Last Name', 'fieldName' => 'LastName'});
+        columns.add(new Map<String, String>{'label' => 'Email', 'fieldName' => 'Email', 'type' => 'email'});
+        columns.add(new Map<String, String>{'label' => 'Mailing City', 'fieldName' => 'MailingCity'});
+        return columns;
     }
 
+    // 2. Fetch Unique Cities for Combo-box
     @AuraEnabled(cacheable=true)
-    public static List<Contact> findContacts(String searchKey) {
-        String key = '%' + searchKey + '%';
-        return [
-            SELECT Id, Name, Title, Phone, Email, Picture__c
-            FROM Contact
-            WHERE Name LIKE :key AND Picture__c != NULL
-            WITH USER_MODE
-            LIMIT 10
-        ];
-    }
-
-    @AuraEnabled(cacheable=true)
-    public static Contact getSingleContact() {
-        return [
-            SELECT Id, Name, Title, Phone, Email, Picture__c
-            FROM Contact
-            WITH USER_MODE
-            LIMIT 1
-        ];
-    }
-
-    @AuraEnabled
-    public static void updateContacts(List<Contact> contactsForUpdate) {
-        // Make sure we can update the database before trying to update
-        if (!Schema.sObjectType.Contact.isUpdateable()) {
-            throw new SecurityException(
-                'Insufficient permissions to update contacts'
-            );
+    public static List<Map<String, String>> getCityOptions() {
+        List<Map<String, String>> options = new List<Map<String, String>>();
+        options.add(new Map<String, String>{'label' => 'All Cities', 'value' => 'All'});
+        
+        // Get unique cities from Contact object
+        for(AggregateResult ar : [SELECT MailingCity FROM Contact WHERE MailingCity != NULL GROUP BY MailingCity]) {
+            String city = (String)ar.get('MailingCity');
+            options.add(new Map<String, String>{'label' => city, 'value' => city});
         }
-        update contactsForUpdate;
+        return options;
     }
 
-    @AuraEnabled
-    public static void updateContact(
-        Id recordId,
-        String firstName,
-        String lastName
-    ) {
-        Contact contact = new Contact(
-            Id = recordId,
-            FirstName = firstName,
-            LastName = lastName
-        );
-        update contact;
+    // 3. Fetch Contacts based on selected City
+    @AuraEnabled(cacheable=true)
+    public static List<Contact> getContactRecords(String selectedCity) {
+        if (selectedCity == 'All' || String.isBlank(selectedCity)) {
+            return [SELECT Id, FirstName, LastName, Email, MailingCity FROM Contact LIMIT 100];
+        }
+        return [SELECT Id, FirstName, LastName, Email, MailingCity FROM Contact WHERE MailingCity = :selectedCity];
     }
 }

@@ -1,0 +1,17 @@
+<template>
+    <template if:true={data.length}>
+    <div style="height: 300px;">
+        <lightning-datatable
+            key-field="Id"
+            data={data}
+            columns={columns}>
+        </lightning-datatable>
+    </div>
+    </template>
+     <lightning-button label="Previous" onclick={handlePrevious}></lightning-button>
+
+    <span>Page {currentPage} of {totalPages}</span>
+
+    <lightning-button label="Next" onclick={handleNext}></lightning-button>
+
+</template>

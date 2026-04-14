@@ -1,0 +1,22 @@
+<template>
+    <lightning-button label="Create Contact" onclick={showPopup}></lightning-button>
+
+    <template if:true={displayModal}>
+        <section class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                
+               
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-form
+                        object-api-name="Contact"
+                        fields={contactFields}
+                        onsuccess={onSaveSuccess}
+                        oncancel={hidePopup}>
+                    </lightning-record-form>
+                </div>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
