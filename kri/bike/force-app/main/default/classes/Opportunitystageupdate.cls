@@ -11,7 +11,7 @@ public class Opportunitystageupdate {
             
         }
     }
-    
+    //em kadha nithoni
     public static void createrelatedtask(list<Opportunity> newlist , Map<Id,Opportunity> oldMap){
         
         list<Task> NT = new list<Task>();
