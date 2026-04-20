@@ -2,7 +2,7 @@ public with sharing class GymController {
 
     @AuraEnabled(cacheable=true)
     public static List<Member__c> getMembers() {  
-       //check
+       // changed by krishna
         return [
             SELECT Id,
                    Name,
