@@ -1,8 +1,8 @@
 public with sharing class GymController {
 
     @AuraEnabled(cacheable=true)
-    public static List<Member__c> getMembers() {  
-       // changed by krishna
+    public static List<Member__c> getMembers() {
+
         return [
             SELECT Id,
                    Name,
@@ -12,5 +12,7 @@ public with sharing class GymController {
             FROM Member__c
             ORDER BY CreatedDate DESC
         ];
-    }
+        //krishna cannot chanhe code
+        //i changed to github kk kk jj
+    }//hv
 }

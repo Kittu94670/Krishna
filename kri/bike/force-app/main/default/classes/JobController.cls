@@ -15,7 +15,6 @@ public without sharing class JobController {
     public static Id saveCandidate(Candidate__c cand) {
         insert cand;
         return cand.Id;
-    }
 
     @AuraEnabled
     public static void uploadResume(Id candidateId, String fileName, String base64Data) {
