@@ -12,24 +12,35 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Get latest commit files
-        id: files
+      - name: Get newly added files
         run: |
-          echo "FILES=$(git diff --name-only HEAD~1 HEAD)" >> $GITHUB_ENV
+          git diff --name-only HEAD~1 HEAD > files.txt
+          echo "FILES=$(cat files.txt)" >> $GITHUB_ENV
 
-      - name: Send Email
+      - name: Show files (debug)
+        run: cat files.txt
+
+      - name: Send Email with Attachment
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "New File Added in GitHub Repo by krishna baap"
-          to: ${{ secrets.EMAIL_TO }}
+
           from: ${{ secrets.EMAIL_FROM }}
+          to: ${{ secrets.EMAIL_TO }}
+
+          subject: "New File Added in GitHub Repo"
+
           body: |
             A new file was added in your repository.
 
             Files:
             ${{ env.FILES }}
+
+          attachments: |
+            files.txt
