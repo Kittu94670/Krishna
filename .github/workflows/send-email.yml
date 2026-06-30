@@ -15,15 +15,20 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Get newly added files
+      - name: Get changed files
         run: |
           git diff --name-only HEAD~1 HEAD > files.txt
-          echo "FILES=$(cat files.txt)" >> $GITHUB_ENV
 
-      - name: Show files (debug)
-        run: cat files.txt
+      - name: Create attachment folder
+        run: |
+          mkdir attachments
+          while read file; do
+            if [ -f "$file" ]; then
+              cp "$file" attachments/
+            fi
+          done < files.txt
 
-      - name: Send Email with Attachment
+      - name: Send Email with real file attachment
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
@@ -40,7 +45,7 @@ jobs:
             A new file was added in your repository.
 
             Files:
-            ${{ env.FILES }}
+            $(cat files.txt)
 
           attachments: |
-            files.txt
+            attachments/*
